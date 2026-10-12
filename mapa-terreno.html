@@ -218,7 +218,7 @@ function gps(){
  if(!navigator.geolocation)return alert('Este navegador no tiene GPS.');
  let first=true;
  wid=navigator.geolocation.watchPosition(async p=>{const c=p.coords;G={lng:c.longitude,lat:c.latitude,alt:c.altitude,dem:G?G.dem:NaN};
-  if(!gm)gm=new maplibregl.Marker({element:Object.assign(document.createElement('div'),{className:'gp'})}).addTo(map);
+  if(!gm)gm=new maplibregl.Marker({element:Object.assign(document.createElement('div'),{className:'gp'})}).setLngLat([G.lng,G.lat]).addTo(map);
   gm.setLngLat([G.lng,G.lat]);
   if(first){first=false;map.flyTo({center:[G.lng,G.lat],zoom:14})}
   upd();const d=await elev(G.lng,G.lat);G.dem=d;show()},
