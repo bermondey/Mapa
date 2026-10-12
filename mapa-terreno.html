@@ -21,8 +21,14 @@ label{display:flex;gap:10px;align-items:center;margin:6px 0 12px}
 input[type=range]{flex:1;accent-color:#2f5d46}
 .lg{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
 .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
-#at{position:fixed;left:6px;bottom:6px;font-size:10px;background:#fffd;padding:2px 6px;border-radius:6px;z-index:4;max-width:70%}
+#at{position:fixed;left:6px;bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:10px;background:#fffd;padding:2px 6px;border-radius:6px;z-index:4;max-width:70%}
 #bx{font-size:13px}
+#dn{position:fixed;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:3px solid #e5483b;border-radius:50%;pointer-events:none;z-index:3}
+#dn::after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#e5483b}
+#ib{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;background:#fff;border-radius:18px;box-shadow:0 2px 12px #0005;z-index:5;padding:8px 0}
+#ib div{flex:1;text-align:center;border-right:1px solid #e3e8e5;padding:0 2px}#ib div:last-child{border:0}
+#ib b{display:block;font-size:16px}#ib small{font-size:10px;color:#5d6a63}
+.gp{width:18px;height:18px;border-radius:50%;background:#2563eb;border:3px solid #fff;box-shadow:0 0 0 1px #0005}
 #ts{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:56px;right:72px;background:#1d2b24;color:#fff;padding:8px 12px;border-radius:12px;z-index:7;font-size:13px}
 .tr{padding:10px 0;border-bottom:1px solid #e3e8e5}
 .th{display:flex;align-items:center;gap:8px}.th b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -33,6 +39,8 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 <div id=map></div>
 <div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
 <input type=file id=fi multiple hidden><div id=ts hidden></div>
+<div id=dn></div>
+<div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div></div>
 <div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
 <div id=sh>
  <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b id=cl>✕</b></div>
@@ -152,8 +160,7 @@ $('#ck').onchange=e=>map.setLayoutProperty('ct','visibility',e.target.checked?'v
 $$('.tabs b[data-t]').forEach(b=>b.onclick=()=>{$$('.tabs b[data-t]').forEach(x=>x.classList.toggle('on',x==b));$$('.p').forEach((p,i)=>p.classList.toggle('on',i==b.dataset.t))});
 $('#bl').onclick=()=>$('#sh').classList.toggle('open');$('#cl').onclick=()=>$('#sh').classList.remove('open');
 let t3=false;$('#b3').onclick=e=>{t3=!t3;map.setTerrain(t3?{source:'dem',exaggeration:1.3}:null);map.easeTo({pitch:t3?65:0});e.target.classList.toggle('on',t3)};
-$('#bg').onclick=()=>navigator.geolocation.getCurrentPosition(p=>{const c=[p.coords.longitude,p.coords.latitude];
- new maplibregl.Marker({color:'#e5483b'}).setLngLat(c).addTo(map);map.flyTo({center:c,zoom:14})},()=>alert('No se pudo obtener la ubicación (hace falta HTTPS y permiso).'));
+$('#bg').onclick=()=>gps();
 // Tracks GPX
 const COL=['#e5483b','#2563eb','#d946ef','#f59e0b','#0d9488'],TK=[],esc=s=>s.replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');let tn=0;
 const hv=(a,b)=>{const r=Math.PI/180;return 12742e3*Math.asin(Math.sqrt(Math.sin((b[1]-a[1])*r/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin((b[0]-a[0])*r/2)**2))};
@@ -178,11 +185,11 @@ function gpx(txt,name){
  const add=()=>{
   map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'MultiLineString',coordinates:segs.map(s=>s.map(p=>[p[0],p[1]]))}},
    ...[P[0],P[P.length-1]].map((p,i)=>({type:'Feature',properties:{e:i},geometry:{type:'Point',coordinates:[p[0],p[1]]}}))]}});
-  const L=['==',['geometry-type'],'MultiLineString'],ln={'line-cap':'round','line-join':'round'};
+  const L=['==',['geometry-type'],'LineString'],ln={'line-cap':'round','line-join':'round'};
   map.addLayer({id:id+'a',type:'line',source:id,filter:L,layout:ln,paint:{'line-color':'#fff','line-width':7}});
   map.addLayer({id:id+'b',type:'line',source:id,filter:L,layout:ln,paint:{'line-color':c,'line-width':4}});
   map.addLayer({id:id+'c',type:'circle',source:id,filter:['==',['geometry-type'],'Point'],paint:{'circle-radius':6,'circle-color':['case',['==',['get','e'],0],'#16a34a','#111'],'circle-stroke-width':2,'circle-stroke-color':'#fff'}});
-  map.fitBounds(b,{padding:60,maxZoom:15});
+  $('#sh').classList.remove('open');map.fitBounds(b,{padding:60,maxZoom:15});
   TK.push({id,name:nm,c,b,km,up,dn,mn,mx,svg});trk();
   toast(`${nm}: ${(km/1000).toFixed(1)} km`+(isNaN(mn)?'':` · +${Math.round(up)} m`))};
  map.getLayer('ct')?add():map.once('load',add)}
@@ -193,5 +200,31 @@ addEventListener('dragover',e=>e.preventDefault());addEventListener('drop',e=>{e
 $('#tk').onclick=e=>{const x=e.target.dataset.x,r=e.target.closest('.tr');
  if(x!=null){const[t]=TK.splice(+x,1);['a','b','c'].forEach(s=>map.removeLayer(t.id+s));map.removeSource(t.id);trk()}
  else if(r){$('#sh').classList.remove('open');map.fitBounds(TK[+r.dataset.i].b,{padding:60,maxZoom:15})}};
+// Diana (centro del mapa) y GPS
+let G=null,wid=null,gm=null,tAlt=NaN,es=0;
+const fm=d=>d<1000?Math.round(d)+' m':(d/1000).toFixed(2)+' km',tx=(i,t)=>$(i).textContent=t,rd=a=>isNaN(a)?'—':Math.round(a)+' m';
+async function elev(lng,lat){const z=14,n=2**z,x=(lng+180)/360*n,y=(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*n;
+ try{return(await dem(z,Math.floor(x),Math.floor(y)))[Math.floor(y%1*256)*256+Math.floor(x%1*256)]}catch(e){return NaN}}
+function show(){tx('#vt',rd(tAlt));
+ if(!G){tx('#vg','—');tx('#vh','—');return}
+ tx('#vg',G.alt!=null?rd(G.alt):isNaN(G.dem)?'—':'~'+rd(G.dem));
+ const d=tAlt-G.dem;tx('#vh',isNaN(d)?'—':(d<0?'−':'+')+Math.abs(Math.round(d))+' m')}
+function upd(){const c=map.getCenter();
+ if(G){tx('#vd',fm(hv([G.lng,G.lat],[c.lng,c.lat])));
+  map.getSource('ln')?.setData({type:'Feature',geometry:{type:'LineString',coordinates:[[G.lng,G.lat],[c.lng,c.lat]]}})}
+ clearTimeout(upd.t);upd.t=setTimeout(async()=>{const k=++es,a=await elev(c.lng,c.lat);if(k==es){tAlt=a;show()}},150)}
+function gps(){
+ if(wid!=null){if(G)map.flyTo({center:[G.lng,G.lat],zoom:Math.max(map.getZoom(),14)});return}
+ if(!navigator.geolocation)return alert('Este navegador no tiene GPS.');
+ let first=true;
+ wid=navigator.geolocation.watchPosition(async p=>{const c=p.coords;G={lng:c.longitude,lat:c.latitude,alt:c.altitude,dem:G?G.dem:NaN};
+  if(!gm)gm=new maplibregl.Marker({element:Object.assign(document.createElement('div'),{className:'gp'})}).addTo(map);
+  gm.setLngLat([G.lng,G.lat]);
+  if(first){first=false;map.flyTo({center:[G.lng,G.lat],zoom:14})}
+  upd();const d=await elev(G.lng,G.lat);G.dem=d;show()},
+  ()=>{wid=null;alert('No se pudo obtener la ubicación (hace falta HTTPS y permiso).')},{enableHighAccuracy:true,maximumAge:5000})}
+map.on('load',()=>{map.addSource('ln',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+ map.addLayer({id:'ln',type:'line',source:'ln',paint:{'line-color':'#e5483b','line-width':2,'line-dasharray':[2,2]}});upd()});
+map.on('move',upd);
 trk();mark();
 </script></body></html>
