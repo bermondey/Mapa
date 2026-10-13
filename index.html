@@ -23,14 +23,8 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 #at{position:fixed;left:6px;bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:10px;background:#fffd;padding:2px 6px;border-radius:6px;z-index:4;max-width:70%}
 #bx{font-size:13px}
-#wb{position:fixed;right:12px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:5;border:0;border-radius:22px;padding:11px 16px;background:#2f5d46;color:#fff;font:700 14px system-ui;box-shadow:0 2px 8px #0005}
-#wc{position:fixed;left:0;right:0;bottom:0;max-height:75%;overflow:auto;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px #0005;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:8;transform:translateY(105%);transition:transform .25s}
-#wc.open{transform:none}
-.wh{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:16px}.wh b{flex:1}.wh span{padding:6px 8px;font-size:18px;color:#2f5d46}
-#wk{display:grid;gap:8px;margin-bottom:10px}#wk input{padding:12px;border:1px solid #ccd;border-radius:10px;font-size:16px}
-#wk button{padding:11px;border:0;border-radius:10px;background:#2f5d46;color:#fff;font-size:15px}
-.wcd{display:block;margin-bottom:14px;color:inherit;text-decoration:none}.wcd img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:#e6ece8;display:block}
-.wcd div{display:flex;justify-content:space-between;gap:8px;margin-top:4px}.wcd small{white-space:nowrap}
+#sc{position:fixed;left:10px;right:10px;bottom:calc(104px + env(safe-area-inset-bottom,0px));background:#fff;border-radius:16px;box-shadow:0 2px 12px #0005;padding:8px 12px;z-index:5}
+#sc .sr{display:flex;align-items:center;gap:10px}#sc .sr b{font-size:18px}#sc .sr span{flex:1;text-align:right;font-size:13px}#sc input[type=date]{font-size:15px;padding:4px}#sc input[type=range]{width:100%;margin:6px 0 0}
 #dn{position:fixed;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:3px solid #e5483b;border-radius:50%;pointer-events:none;z-index:3}
 #dn::after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#e5483b}
 #ib{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;background:#fff;border-radius:18px;box-shadow:0 2px 12px #0005;z-index:5;padding:8px 0}
@@ -47,21 +41,19 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 <div id=map></div>
 <div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
 <input type=file id=fi multiple hidden><div id=ts hidden></div>
-<button id=wb>📷 Webcams</button>
-<div id=wc><div class=wh><b>Webcams cercanas</b><span id=wr>↻</span><span id=wx>✕</span></div>
-<div id=wk><small>Para ver webcams hace falta una clave gratuita de Windy Webcams (api.windy.com/keys). Se guarda solo en este dispositivo.</small><input id=wi placeholder="Pega aquí tu clave" autocapitalize=off autocorrect=off><button id=ws>Guardar clave</button></div>
-<div id=wl></div></div>
+<div id=sc hidden><div class=sr><input id=dt type=date><b id=hl></b><span id=sl></span></div><input id=tm type=range min=0 max=1430 step=10></div>
 <div id=dn></div>
 <div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div></div>
-<div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
+<div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS) · Heatmap © Strava</div>
 <div id=sh>
  <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b id=cl>✕</b></div>
  <div class="p on" id=p0></div>
  <div class=p id=p1>
   <label>Opacidad <input id=op type=range min=.1 max=1 step=.05 value=.7></label>
   <div id=ml></div>
-  <div id=sc hidden><label>Fecha <input id=dt type=date></label>
-   <label>Hora <b id=hl></b><input id=tm type=range min=0 max=1430 step=10></label></div>
+  <p><b>Mapa de calor Strava</b></p><div id=sm></div>
+  <small>Versión pública de baja resolución: nítida hasta zoom 11 y ampliada al acercar. Datos © Strava, solo para uso personal.</small>
+  
   <div class=lg id=lg></div>
   <small>Aludes: es una vista simplificada basada solo en la pendiente. No sustituye al boletín oficial de aludes.</small>
  </div>
@@ -99,8 +91,12 @@ maplibregl.addProtocol('dem',async p=>{
   const h=await dem(z,x,y),cs=156543.034*Math.cos(Math.atan(Math.sinh(Math.PI*(1-2*(y+.5)/2**z))))/2**z,
    H=(i,j)=>h[Math.min(255,Math.max(0,j))*256+Math.min(255,Math.max(0,i))],
    az=+o.az,al=+o.al,sx=Math.sin(az)*Math.cos(al),sy=Math.cos(az)*Math.cos(al),sz=Math.sin(al),ta=Math.tan(al);
+  const TS=Array(9).fill(null);TS[4]=h;
+  const Hs=(i,j)=>{const t=TS[(j<0?0:j>255?2:1)*3+(i<0?0:i>255?2:1)];return t?t[((j+256)%256)*256+(i+256)%256]:H(i,j)},SA=Math.sin(az),CA=Math.cos(az);
+  if(m=='shade'&&al>0){const n=2**z,a1=Math.abs(SA)>.25?Math.sign(SA):0,b1=Math.abs(CA)>.25?-Math.sign(CA):0;
+   await Promise.all([[a1,0],[0,b1],[a1,b1]].filter(([a,b])=>a||b).map(([a,b])=>dem(z,((x+a)%n+n)%n,y+b).then(t=>{TS[(b+1)*3+a+1]=t}).catch(()=>{})))}
   for(let j=0;j<256;j++)for(let i=0;i<256;i++){
-   const e=H(i,j),dx=(H(i+1,j)-H(i-1,j))/(2*cs),dy=(H(i,j-1)-H(i,j+1))/(2*cs),s=Math.atan(Math.hypot(dx,dy))*57.2958;let C=null;
+   const e=Hs(i,j),dx=(Hs(i+1,j)-Hs(i-1,j))/(2*cs),dy=(Hs(i,j-1)-Hs(i,j+1))/(2*cs),s=Math.atan(Math.hypot(dx,dy))*57.2958;let C=null;
    if(m=='slope')C=s>=45?[120,0,160,210]:s>=40?[220,30,30,200]:s>=35?[255,120,0,190]:s>=30?[255,215,0,170]:s>=20?[255,245,150,110]:null;
    else if(m=='avy')C=s>=45?[90,0,90,90]:s>=40?[200,0,0,210]:s>=35?[255,90,0,210]:s>=30?[255,215,0,190]:null;
    else if(m=='flat')C=s<5?[0,255,80,190]:s<8?[0,255,80,90]:null;
@@ -112,10 +108,8 @@ maplibregl.addProtocol('dem',async p=>{
     else{const I=(sz-dx*sx-dy*sy)/Math.hypot(dx,dy,1);
      if(I<=0)a=150;
      else{a=Math.max(0,(.4-I)*250);
-      for(let k=1;k<40;k++){const px=i+2*k*Math.sin(az),py=j-2*k*Math.cos(az);
-       if(px<0||py<0||px>255||py>255)break;
-       if(H(px|0,py|0)>e+2*k*cs*ta){a=150;break}}}}
-    if(a>0)C=[8,16,60,a]}
+      for(let d=2;d<110;d+=d<30?2:4)if(Hs(Math.round(i+d*SA),Math.round(j-d*CA))>e+d*cs*ta){a=150;break}}}
+    if(a>0)C=[8,16,70,a]}
    if(C){const n=4*(j*256+i);D[n]=C[0];D[n+1]=C[1];D[n+2]=C[2];D[n+3]=C[3]}
   }
  }catch(e){}
@@ -124,7 +118,7 @@ maplibregl.addProtocol('dem',async p=>{
 });
 
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s),
- S={base:'topo',mode:'none',op:.7,date:new Date().toLocaleDateString('sv'),min:new Date().getHours()*60};
+ S={base:'topo',mode:'none',op:.7,date:new Date().toLocaleDateString('sv'),min:(h=>h>=8&&h<=19?h:12)(new Date().getHours())*60};
 const map=new maplibregl.Map({container:'map',center:[0.8,42.7],zoom:11.5,maxZoom:17.5,maxPitch:80,attributionControl:false,
  style:{version:8,sources:{
   topo:{type:'raster',tiles:['a','b','c'].map(s=>`https://${s}.tile.opentopomap.org/{z}/{x}/{y}.png`),tileSize:256,maxzoom:17},
@@ -158,16 +152,16 @@ function ov(){
  if(map.getLayer('ov'))map.removeLayer('ov');if(map.getSource('ov'))map.removeSource('ov');
  if(S.mode=='none')return;
  let q='m='+S.mode;
- if(S.mode=='shade'){const c=map.getCenter(),t=new Date(S.date+'T00:00');t.setMinutes(S.min);const[a,l]=sun(t,c.lat,c.lng);q+=`&az=${a}&al=${l}`}
+ if(S.mode=='shade'){const c=map.getCenter(),t=new Date(S.date+'T00:00');t.setMinutes(S.min);const[a,l]=sun(t,c.lat,c.lng);$('#sl').textContent=l>0?'☀ '+Math.round(l*57.2958)+'°':'🌙 de noche';q+=`&az=${a}&al=${l}`}
  map.addSource('ov',{type:'raster',tiles:['dem://{z}/{x}/{y}?'+q],tileSize:256,minzoom:8,maxzoom:15});
  map.addLayer({id:'ov',type:'raster',source:'ov',paint:{'raster-opacity':S.op,'raster-fade-duration':0}},map.getLayer('ct')?'ct':undefined)}
 const lab=()=>$('#hl').textContent=String(S.min/60|0).padStart(2,'0')+':'+String(S.min%60).padStart(2,'0');
 let tmr;const deb=f=>{clearTimeout(tmr);tmr=setTimeout(f,250)};
 
 $('#p0').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(k){base(k);mark()}};
-$('#ml').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(!k)return;S.mode=k;$('#sc').hidden=k!='shade';
+$('#ml').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(!k)return;S.mode=k;$('#sc').hidden=k!='shade';if(k=='shade')$('#sh').classList.remove('open');
  $('#lg').innerHTML=(LG[k]||[]).map(([c,t])=>`<span><i style=background:${c}></i>${t}</span>`).join('');ov();mark()};
-$('#op').oninput=e=>{S.op=+e.target.value;map.getLayer('ov')&&map.setPaintProperty('ov','raster-opacity',S.op)};
+$('#op').oninput=e=>{S.op=+e.target.value;['ov','stride','strun'].forEach(i=>map.getLayer(i)&&map.setPaintProperty(i,'raster-opacity',S.op))};
 $('#dt').value=S.date;$('#tm').value=S.min;lab();
 $('#dt').onchange=e=>{S.date=e.target.value;ov()};
 $('#tm').oninput=e=>{S.min=+e.target.value;lab();deb(ov)};
@@ -229,15 +223,16 @@ function upd(){const c=map.getCenter();
   map.getSource('ln')?.setData({type:'Feature',geometry:{type:'LineString',coordinates:[[G.lng,G.lat],[c.lng,c.lat]]}})}
  clearTimeout(upd.t);upd.t=setTimeout(async()=>{const k=++es,a=await elev(c.lng,c.lat);if(k==es){tAlt=a;show()}},150)}
 function gps(){
- if(wid!=null){if(G)map.flyTo({center:[G.lng,G.lat],zoom:Math.max(map.getZoom(),14)});return}
+ if(wid!=null){navigator.geolocation.clearWatch(wid);wid=null;G=null;gm?.remove();gm=null;
+  map.getSource('ln')?.setData({type:'FeatureCollection',features:[]});tx('#vd','—');show();$('#bg').classList.remove('on');return}
  if(!navigator.geolocation)return alert('Este navegador no tiene GPS.');
- let first=true;
+ let first=true;$('#bg').classList.add('on');
  wid=navigator.geolocation.watchPosition(async p=>{const c=p.coords;G={lng:c.longitude,lat:c.latitude,alt:c.altitude,dem:G?G.dem:NaN};
   if(!gm)gm=new maplibregl.Marker({element:Object.assign(document.createElement('div'),{className:'gp'})}).setLngLat([G.lng,G.lat]).addTo(map);
   gm.setLngLat([G.lng,G.lat]);
   if(first){first=false;map.flyTo({center:[G.lng,G.lat],zoom:14})}
-  upd();const d=await elev(G.lng,G.lat);G.dem=d;show()},
-  ()=>{wid=null;alert('No se pudo obtener la ubicación (hace falta HTTPS y permiso).')},{enableHighAccuracy:true,maximumAge:5000})}
+  upd();const d=await elev(G.lng,G.lat);if(G){G.dem=d;show()}},
+  ()=>{wid=null;$('#bg').classList.remove('on');alert('No se pudo obtener la ubicación (hace falta HTTPS y permiso).')},{enableHighAccuracy:true,maximumAge:5000})}
 map.on('load',()=>{map.addSource('ln',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
  map.addLayer({id:'ln',type:'line',source:'ln',paint:{'line-color':'#e5483b','line-width':2,'line-dasharray':[2,2]}});upd()});
 map.on('move',upd);
@@ -266,25 +261,15 @@ map.on('load',()=>{map.addSource('mtb',{type:'geojson',data:{type:'FeatureCollec
  map.addLayer({id:'mtbb',type:'line',source:'mtb',layout:{...ln,...vis},paint:{'line-color':['match',['get','d'],0,'#22c55e',1,'#2563eb',2,'#111827',3,'#b91c1c','#7c3aed'],'line-width':3}})});
 map.on('moveend',()=>{clearTimeout(mtt);mtt=setTimeout(mtb,500)});
 $('#mt').onchange=e=>{mt=e.target.checked;['mtba','mtbb'].forEach(i=>map.setLayoutProperty(i,'visibility',mt?'visible':'none'));mt?mtb():mc?.abort()};
-// Webcams cercanas (Windy Webcams API v3)
-let KEY='';
-const wk=()=>{try{return localStorage.getItem('wk')||KEY}catch(e){return KEY}};
-async function wcams(){
- const L=$('#wl'),c=map.getCenter(),ref=G?[G.lng,G.lat]:[c.lng,c.lat];
- $('#wk').hidden=!!wk();
- if(!wk()){L.innerHTML='';return}
- L.innerHTML='<small>Buscando webcams cercanas…</small>';
- try{
-  const r=await fetch(`https://api.windy.com/webcams/api/v3/webcams?nearby=${ref[1].toFixed(4)},${ref[0].toFixed(4)},50&limit=30&lang=es&include=images,location,urls`,{headers:{'x-windy-api-key':wk()}});
-  if(r.status==401||r.status==403){L.innerHTML='<small>La clave no es válida.</small> <u id=wch>Introducir otra</u>';return}
-  if(!r.ok)throw r.status;
-  const j=await r.json(),w=(j.webcams||[]).map(x=>({...x,d:hv(ref,[x.location.longitude,x.location.latitude])})).sort((a,b)=>a.d-b.d);
-  L.innerHTML=(w.length?w.map(x=>{const i=x.images?.current||{},m=x.lastUpdatedOn?Math.max(0,Math.round((Date.now()-new Date(x.lastUpdatedOn))/6e4)):null;
-   return`<a class=wcd href="${esc(x.urls?.detail||'#')}" target=_blank rel=noopener><img loading=lazy alt="" src="${esc(i.preview||i.thumbnail||'')}"><div><b>${esc(x.title||'Webcam')}</b><small>${fm(x.d)}${m!=null?' · hace '+(m<60?m+' min':Math.round(m/60)+' h'):''}</small></div></a>`}).join(''):'<small>No hay webcams en un radio de 50 km.</small>')+'<small>Imágenes © Windy Webcams y sus propietarios. <u id=wch>Cambiar clave</u></small>';
- }catch(e){L.innerHTML='<small>No se pudieron cargar las webcams ('+(e.message||e)+').</small>'}}
-const wco=o=>{$('#wc').classList.toggle('open',o);if(o){$('#sh').classList.remove('open');wcams()}};
-$('#wb').onclick=()=>wco(true);$('#wx').onclick=()=>wco(false);$('#wr').onclick=wcams;
-$('#ws').onclick=()=>{const v=$('#wi').value.trim();if(!v)return;KEY=v;try{localStorage.setItem('wk',v)}catch(e){}wcams()};
-$('#wl').onclick=e=>{if(e.target.id=='wch'){KEY='';try{localStorage.removeItem('wk')}catch(_){}wcams()}};
+// Mapa de calor Strava (ciclismo y correr)
+let se=0;
+$('#sm').innerHTML=card([['ride','Strava ciclismo','Mapa de calor de rutas en bici','linear-gradient(135deg,#1e3a8a,#ef4444,#fde047)'],
+ ['run','Strava correr','Mapa de calor de carreras a pie','linear-gradient(135deg,#1e3a8a,#ef4444,#fde047)']],{});
+map.on('load',()=>['ride','run'].forEach(a=>{
+ map.addSource('st'+a,{type:'raster',tiles:['a','b','c'].map(c=>`https://heatmap-external-${c}.strava.com/tiles/${a}/bluered/{z}/{x}/{y}.png?px=256`),tileSize:256,maxzoom:11});
+ map.addLayer({id:'st'+a,type:'raster',source:'st'+a,layout:{visibility:'none'},paint:{'raster-opacity':S.op,'raster-fade-duration':0}},'ct')}));
+$('#sm').onclick=e=>{const el=e.target.closest('.it');if(!el)return;const k='st'+el.dataset.k,on=map.getLayoutProperty(k,'visibility')!='visible';
+ map.setLayoutProperty(k,'visibility',on?'visible':'none');el.classList.toggle('on',on);if(on)se=0};
+map.on('error',e=>{if(e.sourceId&&e.sourceId.startsWith('st')&&!se++)toast('Strava no responde o bloquea esta capa. Prueba más tarde.')});
 trk();mark();
 </script></body></html>
