@@ -23,6 +23,14 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 #at{position:fixed;left:6px;bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:10px;background:#fffd;padding:2px 6px;border-radius:6px;z-index:4;max-width:70%}
 #bx{font-size:13px}
+#wb{position:fixed;right:12px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:5;border:0;border-radius:22px;padding:11px 16px;background:#2f5d46;color:#fff;font:700 14px system-ui;box-shadow:0 2px 8px #0005}
+#wc{position:fixed;left:0;right:0;bottom:0;max-height:75%;overflow:auto;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px #0005;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:8;transform:translateY(105%);transition:transform .25s}
+#wc.open{transform:none}
+.wh{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:16px}.wh b{flex:1}.wh span{padding:6px 8px;font-size:18px;color:#2f5d46}
+#wk{display:grid;gap:8px;margin-bottom:10px}#wk input{padding:12px;border:1px solid #ccd;border-radius:10px;font-size:16px}
+#wk button{padding:11px;border:0;border-radius:10px;background:#2f5d46;color:#fff;font-size:15px}
+.wcd{display:block;margin-bottom:14px;color:inherit;text-decoration:none}.wcd img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:#e6ece8;display:block}
+.wcd div{display:flex;justify-content:space-between;gap:8px;margin-top:4px}.wcd small{white-space:nowrap}
 #dn{position:fixed;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:3px solid #e5483b;border-radius:50%;pointer-events:none;z-index:3}
 #dn::after{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#e5483b}
 #ib{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;background:#fff;border-radius:18px;box-shadow:0 2px 12px #0005;z-index:5;padding:8px 0}
@@ -39,6 +47,10 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 <div id=map></div>
 <div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
 <input type=file id=fi multiple hidden><div id=ts hidden></div>
+<button id=wb>📷 Webcams</button>
+<div id=wc><div class=wh><b>Webcams cercanas</b><span id=wr>↻</span><span id=wx>✕</span></div>
+<div id=wk><small>Para ver webcams hace falta una clave gratuita de Windy Webcams (api.windy.com/keys). Se guarda solo en este dispositivo.</small><input id=wi placeholder="Pega aquí tu clave" autocapitalize=off autocorrect=off><button id=ws>Guardar clave</button></div>
+<div id=wl></div></div>
 <div id=dn></div>
 <div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div></div>
 <div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
@@ -55,6 +67,9 @@ input[type=range]{flex:1;accent-color:#2f5d46}
  </div>
  <div class=p id=p2><label><input type=checkbox id=ck> Curvas de nivel (cada 20 m, y 100 m más marcadas)</label>
   <small>Se calculan desde el modelo de elevación a partir del zoom 11.</small>
+  <label style="margin-top:14px"><input type=checkbox id=mt> Rutas MTB por dificultad (OpenStreetMap)</label>
+  <div class=lg><span><i style=background:#22c55e></i>fácil</span><span><i style=background:#2563eb></i>intermedia</span><span><i style=background:#111827></i>difícil</span><span><i style=background:#b91c1c></i>muy difícil</span><span><i style=background:#7c3aed></i>extrema</span></div>
+  <small>Solo salen senderos etiquetados con dificultad MTB en OpenStreetMap (zoom 12 o más). No son datos de Trailforks y los colores son aproximados.</small>
   <p><b>Tracks GPX</b></p><button id=ad>Añadir GPX</button><div id=tk></div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -226,5 +241,50 @@ function gps(){
 map.on('load',()=>{map.addSource('ln',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
  map.addLayer({id:'ln',type:'line',source:'ln',paint:{'line-color':'#e5483b','line-width':2,'line-dasharray':[2,2]}});upd()});
 map.on('move',upd);
+// Rutas MTB (OpenStreetMap vía Overpass)
+let mt=false,mb=null,mc=null,mtt;
+async function mtb(){
+ if(!mt)return;
+ if(map.getZoom()<12){toast('Acerca el mapa (zoom 12 o más) para ver las rutas MTB');return}
+ const v=map.getBounds();
+ if(mb&&v.getWest()>=mb[0]&&v.getSouth()>=mb[1]&&v.getEast()<=mb[2]&&v.getNorth()<=mb[3])return;
+ const w=v.getWest(),so=v.getSouth(),e=v.getEast(),n=v.getNorth(),px=(e-w)*.3,py=(n-so)*.3,bb=[w-px,so-py,e+px,n+py];
+ mc?.abort();mc=new AbortController();toast('Cargando rutas MTB…');
+ try{
+  const q=`[out:json][timeout:25];way["highway"]["mtb:scale"](${bb[1]},${bb[0]},${bb[3]},${bb[2]});out geom;`;
+  const r=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q),{signal:mc.signal});
+  if(!r.ok)throw 0;
+  const j=await r.json(),f=j.elements.filter(x=>x.geometry).map(x=>{const t=x.tags,im=+t['mtb:scale:imba'],sc=parseInt(t['mtb:scale']);
+   const d=!isNaN(im)&&t['mtb:scale:imba']!=null?[0,0,1,2,3][Math.min(im,4)]:Math.min(isNaN(sc)?0:sc,4);
+   return{type:'Feature',properties:{d},geometry:{type:'LineString',coordinates:x.geometry.map(p=>[p.lon,p.lat])}}});
+  map.getSource('mtb').setData({type:'FeatureCollection',features:f});mb=bb;
+  toast(f.length?f.length+' tramos MTB cargados':'No hay senderos MTB etiquetados en esta zona');
+ }catch(err){if(err.name!='AbortError')toast('No se pudieron cargar las rutas MTB')}}
+map.on('load',()=>{map.addSource('mtb',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+ const ln={'line-cap':'round','line-join':'round'},vis={visibility:'none'};
+ map.addLayer({id:'mtba',type:'line',source:'mtb',layout:{...ln,...vis},paint:{'line-color':'#fff','line-width':5.5}});
+ map.addLayer({id:'mtbb',type:'line',source:'mtb',layout:{...ln,...vis},paint:{'line-color':['match',['get','d'],0,'#22c55e',1,'#2563eb',2,'#111827',3,'#b91c1c','#7c3aed'],'line-width':3}})});
+map.on('moveend',()=>{clearTimeout(mtt);mtt=setTimeout(mtb,500)});
+$('#mt').onchange=e=>{mt=e.target.checked;['mtba','mtbb'].forEach(i=>map.setLayoutProperty(i,'visibility',mt?'visible':'none'));mt?mtb():mc?.abort()};
+// Webcams cercanas (Windy Webcams API v3)
+let KEY='';
+const wk=()=>{try{return localStorage.getItem('wk')||KEY}catch(e){return KEY}};
+async function wcams(){
+ const L=$('#wl'),c=map.getCenter(),ref=G?[G.lng,G.lat]:[c.lng,c.lat];
+ $('#wk').hidden=!!wk();
+ if(!wk()){L.innerHTML='';return}
+ L.innerHTML='<small>Buscando webcams cercanas…</small>';
+ try{
+  const r=await fetch(`https://api.windy.com/webcams/api/v3/webcams?nearby=${ref[1].toFixed(4)},${ref[0].toFixed(4)},50&limit=30&lang=es&include=images,location,urls`,{headers:{'x-windy-api-key':wk()}});
+  if(r.status==401||r.status==403){L.innerHTML='<small>La clave no es válida.</small> <u id=wch>Introducir otra</u>';return}
+  if(!r.ok)throw r.status;
+  const j=await r.json(),w=(j.webcams||[]).map(x=>({...x,d:hv(ref,[x.location.longitude,x.location.latitude])})).sort((a,b)=>a.d-b.d);
+  L.innerHTML=(w.length?w.map(x=>{const i=x.images?.current||{},m=x.lastUpdatedOn?Math.max(0,Math.round((Date.now()-new Date(x.lastUpdatedOn))/6e4)):null;
+   return`<a class=wcd href="${esc(x.urls?.detail||'#')}" target=_blank rel=noopener><img loading=lazy alt="" src="${esc(i.preview||i.thumbnail||'')}"><div><b>${esc(x.title||'Webcam')}</b><small>${fm(x.d)}${m!=null?' · hace '+(m<60?m+' min':Math.round(m/60)+' h'):''}</small></div></a>`}).join(''):'<small>No hay webcams en un radio de 50 km.</small>')+'<small>Imágenes © Windy Webcams y sus propietarios. <u id=wch>Cambiar clave</u></small>';
+ }catch(e){L.innerHTML='<small>No se pudieron cargar las webcams ('+(e.message||e)+').</small>'}}
+const wco=o=>{$('#wc').classList.toggle('open',o);if(o){$('#sh').classList.remove('open');wcams()}};
+$('#wb').onclick=()=>wco(true);$('#wx').onclick=()=>wco(false);$('#wr').onclick=wcams;
+$('#ws').onclick=()=>{const v=$('#wi').value.trim();if(!v)return;KEY=v;try{localStorage.setItem('wk',v)}catch(e){}wcams()};
+$('#wl').onclick=e=>{if(e.target.id=='wch'){KEY='';try{localStorage.removeItem('wk')}catch(_){}wcams()}};
 trk();mark();
 </script></body></html>
