@@ -24,6 +24,9 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 #at{position:fixed;left:6px;bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:10px;background:#fffd;padding:2px 6px;border-radius:6px;z-index:4;max-width:70%}
 #bx{font-size:13px}
+#lg2{position:fixed;left:10px;bottom:calc(104px + env(safe-area-inset-bottom,0px));background:#fffffff2;border-radius:14px;box-shadow:0 2px 10px #0004;padding:8px 10px;z-index:4;max-width:calc(100% - 20px);font-size:12px}
+#lg2 b{display:block;font-size:13px}#lg2 small{display:block;margin-bottom:4px}#lg2 span{display:inline-block;margin:0 8px 2px 0}
+#lg2 i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:4px;vertical-align:-3px;border:1px solid #0003}
 #rt{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px #0005;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:7;transform:translateY(105%);transition:transform .25s}
 #rt.open{transform:none}
 .wh{display:flex;align-items:center;margin-bottom:8px;font-size:16px}.wh b{flex:1}.wh span{padding:6px 8px;font-size:18px;color:#2f5d46}
@@ -48,13 +51,14 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 </style></head><body>
 <div id=map></div>
 <div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=br title="Crear ruta">✎</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
-<input type=file id=fi multiple hidden><div id=ts hidden></div>
+<input type=file id=fi multiple hidden accept=".gpx,.xml,application/gpx+xml,application/xml,text/xml,application/octet-stream"><div id=ts hidden></div>
 <div id=rt><div class=wh><b>Crear ruta</b><span id=rx>✕</span></div>
 <div class=sg><b data-p=bike class=on>Bici</b><b data-p=foot>A pie</b><b data-p=line>Recta</b></div>
 <div id=rs><div><b id=rd>0 m</b><small>distancia</small></div><div><b id=ru>+0 m</b><small>desnivel +</small></div><div><b id=rn>−0 m</b><small>desnivel −</small></div></div>
 <div class=ra><button id=rz>Deshacer</button><button id=rb>Borrar</button><button id=rg>Guardar GPX</button></div>
 <small id=rm>Toca el mapa para añadir puntos.</small></div>
 <div id=sc hidden><div class=sr><input id=dt type=date><b id=hl></b><span id=sl></span></div><input id=tm type=range min=0 max=1430 step=10></div>
+<div id=lg2 hidden></div>
 <div id=dn></div>
 <div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div></div>
 <div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
@@ -171,7 +175,7 @@ let tmr;const deb=f=>{clearTimeout(tmr);tmr=setTimeout(f,250)};
 
 $('#p0').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(k){base(k);mark()}};
 $('#ml').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(!k)return;S.mode=k;$('#sc').hidden=k!='shade';if(k=='shade')$('#sh').classList.remove('open');
- $('#lg').innerHTML=(LG[k]||[]).map(([c,t])=>`<span><i style=background:${c}></i>${t}</span>`).join('');ov();mark()};
+ $('#lg').innerHTML=(LG[k]||[]).map(([c,t])=>`<span><i style=background:${c}></i>${t}</span>`).join('');leg(k);ov();mark()};
 $('#op').oninput=e=>{S.op=+e.target.value;map.getLayer('ov')&&map.setPaintProperty('ov','raster-opacity',S.op)};
 $('#dt').value=S.date;$('#tm').value=S.min;lab();
 $('#dt').onchange=e=>{S.date=e.target.value;ov()};
@@ -306,5 +310,10 @@ $('#rg').onclick=()=>{if(!RTE)return toast('Dibuja primero una ruta');
  f=new File([g],`ruta-${d}.gpx`,{type:'application/gpx+xml'});
  if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Ruta'}).catch(()=>{});
  else{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click()}};
+// Leyenda flotante de colores
+LG.slope.unshift(['#fff','menos de 20°']);LG.avy.unshift(['#fff','menos de 30°']);LG.avy.push(['#5a005a','más de 45°']);
+LG.elev=[['#228b22','0 m'],['#9acd32','1000 m'],['#deb887','2000 m'],['#96705a','2800 m'],['#fff','3500 m o más']];
+const LT={slope:['Ángulo de pendiente','Inclinación del terreno'],aspect:['Orientación','Hacia dónde mira la ladera'],avy:['Riesgo de aludes','Solo por pendiente (orientativo)'],flat:['Zonas planas','Pendiente baja'],elev:['Altitud','Colores cada 250 m']};
+const leg=k=>{const e=$('#lg2'),t=LT[k];e.hidden=!t;if(t)e.innerHTML=`<b>${t[0]}</b><small>${t[1]}</small>`+LG[k].map(([c,x])=>`<span><i style=background:${c}></i>${x}</span>`).join('')};
 trk();mark();
 </script></body></html>
