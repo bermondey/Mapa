@@ -1,5 +1,6 @@
 <!doctype html><html lang=es><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Mapa de terreno</title>
+<meta name=apple-mobile-web-app-capable content=yes><meta name=mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-title content=Mapa>
 <link rel=stylesheet href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
 *{box-sizing:border-box}html,body,#map{margin:0;height:100%}
@@ -23,6 +24,13 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 #at{position:fixed;left:6px;bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:10px;background:#fffd;padding:2px 6px;border-radius:6px;z-index:4;max-width:70%}
 #bx{font-size:13px}
+#rt{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px #0005;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:7;transform:translateY(105%);transition:transform .25s}
+#rt.open{transform:none}
+.wh{display:flex;align-items:center;margin-bottom:8px;font-size:16px}.wh b{flex:1}.wh span{padding:6px 8px;font-size:18px;color:#2f5d46}
+.sg{display:flex;gap:6px;margin-bottom:8px}.sg b{flex:1;text-align:center;padding:8px 0;border-radius:10px;background:#eef3f0;font-weight:500}.sg b.on{background:#2f5d46;color:#fff}
+#rs{display:flex;margin-bottom:8px}#rs div{flex:1;text-align:center}#rs b{display:block;font-size:17px}#rs small{font-size:10px}
+.ra{display:flex;gap:6px;margin-bottom:6px}.ra button{flex:1;padding:11px 0;border:0;border-radius:10px;background:#eef3f0;font-size:14px;color:#1d2b24}.ra #rg{background:#2f5d46;color:#fff}
+.big{display:block;width:100%;margin:8px 0;padding:12px;border:0;border-radius:10px;background:#2f5d46;color:#fff;font-size:15px}
 #sc{position:fixed;left:10px;right:10px;bottom:calc(104px + env(safe-area-inset-bottom,0px));background:#fff;border-radius:16px;box-shadow:0 2px 12px #0005;padding:8px 12px;z-index:5}
 #sc .sr{display:flex;align-items:center;gap:10px}#sc .sr b{font-size:18px}#sc .sr span{flex:1;text-align:right;font-size:13px}#sc input[type=date]{font-size:15px;padding:4px}#sc input[type=range]{width:100%;margin:6px 0 0}
 #dn{position:fixed;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border:3px solid #e5483b;border-radius:50%;pointer-events:none;z-index:3}
@@ -39,30 +47,33 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 #ad{margin:6px 0 8px;padding:10px 14px;border:0;border-radius:10px;background:#2f5d46;color:#fff;font-size:15px}
 </style></head><body>
 <div id=map></div>
-<div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
+<div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=br title="Crear ruta">✎</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
 <input type=file id=fi multiple hidden><div id=ts hidden></div>
+<div id=rt><div class=wh><b>Crear ruta</b><span id=rx>✕</span></div>
+<div class=sg><b data-p=bike class=on>Bici</b><b data-p=foot>A pie</b><b data-p=line>Recta</b></div>
+<div id=rs><div><b id=rd>0 m</b><small>distancia</small></div><div><b id=ru>+0 m</b><small>desnivel +</small></div><div><b id=rn>−0 m</b><small>desnivel −</small></div></div>
+<div class=ra><button id=rz>Deshacer</button><button id=rb>Borrar</button><button id=rg>Guardar GPX</button></div>
+<small id=rm>Toca el mapa para añadir puntos.</small></div>
 <div id=sc hidden><div class=sr><input id=dt type=date><b id=hl></b><span id=sl></span></div><input id=tm type=range min=0 max=1430 step=10></div>
 <div id=dn></div>
 <div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div></div>
-<div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS) · Heatmap © Strava</div>
+<div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
 <div id=sh>
- <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b id=cl>✕</b></div>
+ <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b data-t=3>Offline</b><b id=cl>✕</b></div>
  <div class="p on" id=p0></div>
  <div class=p id=p1>
   <label>Opacidad <input id=op type=range min=.1 max=1 step=.05 value=.7></label>
   <div id=ml></div>
-  <p><b>Mapa de calor Strava</b></p><div id=sm></div>
-  <small>Versión pública de baja resolución: nítida hasta zoom 11 y ampliada al acercar. Datos © Strava, solo para uso personal.</small>
   
   <div class=lg id=lg></div>
   <small>Aludes: es una vista simplificada basada solo en la pendiente. No sustituye al boletín oficial de aludes.</small>
  </div>
  <div class=p id=p2><label><input type=checkbox id=ck> Curvas de nivel (cada 20 m, y 100 m más marcadas)</label>
   <small>Se calculan desde el modelo de elevación a partir del zoom 11.</small>
-  <label style="margin-top:14px"><input type=checkbox id=mt> Rutas MTB por dificultad (OpenStreetMap)</label>
-  <div class=lg><span><i style=background:#22c55e></i>fácil</span><span><i style=background:#2563eb></i>intermedia</span><span><i style=background:#111827></i>difícil</span><span><i style=background:#b91c1c></i>muy difícil</span><span><i style=background:#7c3aed></i>extrema</span></div>
-  <small>Solo salen senderos etiquetados con dificultad MTB en OpenStreetMap (zoom 12 o más). No son datos de Trailforks y los colores son aproximados.</small>
   <p><b>Tracks GPX</b></p><button id=ad>Añadir GPX</button><div id=tk></div></div>
+ <div class=p id=p3><small id=osx></small>
+  <button id=od class=big>Descargar esta zona</button><button id=oc class=big style="background:#8a948e">Borrar mapas descargados</button>
+  <small>Guarda el mapa base actual y el relieve (para pendientes y sombras) de lo que ves y 3 niveles más de zoom. Instala la web en la pantalla de inicio y descarga desde ahí.</small></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
@@ -161,7 +172,7 @@ let tmr;const deb=f=>{clearTimeout(tmr);tmr=setTimeout(f,250)};
 $('#p0').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(k){base(k);mark()}};
 $('#ml').onclick=e=>{const k=e.target.closest('.it')?.dataset.k;if(!k)return;S.mode=k;$('#sc').hidden=k!='shade';if(k=='shade')$('#sh').classList.remove('open');
  $('#lg').innerHTML=(LG[k]||[]).map(([c,t])=>`<span><i style=background:${c}></i>${t}</span>`).join('');ov();mark()};
-$('#op').oninput=e=>{S.op=+e.target.value;['ov','stride','strun'].forEach(i=>map.getLayer(i)&&map.setPaintProperty(i,'raster-opacity',S.op))};
+$('#op').oninput=e=>{S.op=+e.target.value;map.getLayer('ov')&&map.setPaintProperty('ov','raster-opacity',S.op)};
 $('#dt').value=S.date;$('#tm').value=S.min;lab();
 $('#dt').onchange=e=>{S.date=e.target.value;ov()};
 $('#tm').oninput=e=>{S.min=+e.target.value;lab();deb(ov)};
@@ -236,40 +247,64 @@ function gps(){
 map.on('load',()=>{map.addSource('ln',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
  map.addLayer({id:'ln',type:'line',source:'ln',paint:{'line-color':'#e5483b','line-width':2,'line-dasharray':[2,2]}});upd()});
 map.on('move',upd);
-// Rutas MTB (OpenStreetMap vía Overpass)
-let mt=false,mb=null,mc=null,mtt;
-async function mtb(){
- if(!mt)return;
- if(map.getZoom()<12){toast('Acerca el mapa (zoom 12 o más) para ver las rutas MTB');return}
- const v=map.getBounds();
- if(mb&&v.getWest()>=mb[0]&&v.getSouth()>=mb[1]&&v.getEast()<=mb[2]&&v.getNorth()<=mb[3])return;
- const w=v.getWest(),so=v.getSouth(),e=v.getEast(),n=v.getNorth(),px=(e-w)*.3,py=(n-so)*.3,bb=[w-px,so-py,e+px,n+py];
- mc?.abort();mc=new AbortController();toast('Cargando rutas MTB…');
- try{
-  const q=`[out:json][timeout:25];way["highway"]["mtb:scale"](${bb[1]},${bb[0]},${bb[3]},${bb[2]});out geom;`;
-  const r=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q),{signal:mc.signal});
-  if(!r.ok)throw 0;
-  const j=await r.json(),f=j.elements.filter(x=>x.geometry).map(x=>{const t=x.tags,im=+t['mtb:scale:imba'],sc=parseInt(t['mtb:scale']);
-   const d=!isNaN(im)&&t['mtb:scale:imba']!=null?[0,0,1,2,3][Math.min(im,4)]:Math.min(isNaN(sc)?0:sc,4);
-   return{type:'Feature',properties:{d},geometry:{type:'LineString',coordinates:x.geometry.map(p=>[p.lon,p.lat])}}});
-  map.getSource('mtb').setData({type:'FeatureCollection',features:f});mb=bb;
-  toast(f.length?f.length+' tramos MTB cargados':'No hay senderos MTB etiquetados en esta zona');
- }catch(err){if(err.name!='AbortError')toast('No se pudieron cargar las rutas MTB')}}
-map.on('load',()=>{map.addSource('mtb',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
- const ln={'line-cap':'round','line-join':'round'},vis={visibility:'none'};
- map.addLayer({id:'mtba',type:'line',source:'mtb',layout:{...ln,...vis},paint:{'line-color':'#fff','line-width':5.5}});
- map.addLayer({id:'mtbb',type:'line',source:'mtb',layout:{...ln,...vis},paint:{'line-color':['match',['get','d'],0,'#22c55e',1,'#2563eb',2,'#111827',3,'#b91c1c','#7c3aed'],'line-width':3}})});
-map.on('moveend',()=>{clearTimeout(mtt);mtt=setTimeout(mtb,500)});
-$('#mt').onchange=e=>{mt=e.target.checked;['mtba','mtbb'].forEach(i=>map.setLayoutProperty(i,'visibility',mt?'visible':'none'));mt?mtb():mc?.abort()};
-// Mapa de calor Strava (ciclismo y correr)
-let se=0;
-$('#sm').innerHTML=card([['ride','Strava ciclismo','Mapa de calor de rutas en bici','linear-gradient(135deg,#1e3a8a,#ef4444,#fde047)'],
- ['run','Strava correr','Mapa de calor de carreras a pie','linear-gradient(135deg,#1e3a8a,#ef4444,#fde047)']],{});
-map.on('load',()=>['ride','run'].forEach(a=>{
- map.addSource('st'+a,{type:'raster',tiles:['a','b','c'].map(c=>`https://heatmap-external-${c}.strava.com/tiles/${a}/bluered/{z}/{x}/{y}.png?px=256`),tileSize:256,maxzoom:11});
- map.addLayer({id:'st'+a,type:'raster',source:'st'+a,layout:{visibility:'none'},paint:{'raster-opacity':S.op,'raster-fade-duration':0}},'ct')}));
-$('#sm').onclick=e=>{const el=e.target.closest('.it');if(!el)return;const k='st'+el.dataset.k,on=map.getLayoutProperty(k,'visibility')!='visible';
- map.setLayoutProperty(k,'visibility',on?'visible':'none');el.classList.toggle('on',on);if(on)se=0};
-map.on('error',e=>{if(e.sourceId&&e.sourceId.startsWith('st')&&!se++)toast('Strava no responde o bloquea esta capa. Prueba más tarde.')});
+// Sin conexión: service worker + descarga de zona
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+const tl=(lng,z)=>Math.floor((lng+180)/360*2**z),tt=(lat,z)=>Math.floor((1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*2**z);
+const tu={topo:(z,x,y)=>`https://${'abc'[(x+y)%3]}.tile.opentopomap.org/${z}/${x}/${y}.png`,
+ sat:(z,x,y)=>`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
+ dem:(z,x,y)=>T.replace('{z}/{x}/{y}',`${z}/${x}/${y}`)};
+function plan(z1){const b=map.getBounds(),z0=Math.floor(map.getZoom()),U=new Set(),ks=S.base=='mix'?['topo','sat']:[S.base=='sat'?'sat':'topo'];
+ const add=(k,z,m)=>{for(let x=tl(b.getWest(),z)-m;x<=tl(b.getEast(),z)+m;x++)for(let y=tt(b.getNorth(),z)-m;y<=tt(b.getSouth(),z)+m;y++)U.add(tu[k](z,x,y))};
+ for(let z=z0;z<=z1;z++){ks.forEach(k=>add(k,Math.min(z,17),0));add('dem',Math.min(z,15),1)}
+ add('dem',14,1);return[...U]}
+$('[data-t="3"]').addEventListener('click',()=>$('#osx').textContent=navigator.serviceWorker&&navigator.serviceWorker.controller?'✓ Modo sin conexión activo. Los mapas que ves se guardan solos.':'Modo sin conexión aún no activo: recarga la página una vez con internet.');
+$('#od').onclick=async()=>{
+ if(!(navigator.serviceWorker&&navigator.serviceWorker.controller))return toast('Recarga la página una vez con internet para activar el modo sin conexión');
+ const z0=Math.floor(map.getZoom());let z1=Math.min(z0+3,17),L=plan(z1);
+ while(L.length>1500&&z1>z0)L=plan(--z1);
+ if(L.length>1500)return toast('Zona demasiado grande: acerca el mapa');
+ if(!confirm(`Se descargarán ${L.length} mapas (unos ${Math.round(L.length*.035)} MB). ¿Continuar?`))return;
+ const tot=L.length;let n=0,f=0;
+ const w=async()=>{while(L.length){const u=L.pop();try{const r=await fetch(u);if(!r.ok)f++}catch(e){f++}toast(`Descargando ${++n}/${tot}`)}};
+ await Promise.all([w(),w(),w(),w(),w(),w()]);toast(f?`Descarga lista (${f} fallos)`:'Zona descargada ✓')};
+$('#oc').onclick=async()=>{await caches.delete('tiles');toast('Mapas descargados borrados')};
+
+// Crear rutas (siguiendo caminos o en línea recta)
+let ed=false,PF='bike',WP=[],RT=0,RTE=null;const SC=new Map();
+map.on('load',()=>{map.addSource('rl',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+ const ln={'line-cap':'round','line-join':'round'},F=['==',['geometry-type'],'LineString'];
+ map.addLayer({id:'rla',type:'line',source:'rl',filter:F,layout:ln,paint:{'line-color':'#fff','line-width':7}});
+ map.addLayer({id:'rlb',type:'line',source:'rl',filter:F,layout:ln,paint:{'line-color':'#f97316','line-width':4}});
+ map.addLayer({id:'rlc',type:'circle',source:'rl',filter:['==',['geometry-type'],'Point'],paint:{'circle-radius':6,'circle-color':'#fff','circle-stroke-width':3,'circle-stroke-color':'#f97316'}})});
+const draw=l=>map.getSource('rl')&&map.getSource('rl').setData({type:'FeatureCollection',features:[...(l&&l.length>1?[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:l}}]:[]),...WP.map(p=>({type:'Feature',properties:{},geometry:{type:'Point',coordinates:p}}))]});
+async function rebuild(){
+ const k=++RT,line=[];let off=false;
+ for(let i=1;i<WP.length;i++){const a=WP[i-1],b=WP[i],key=PF+a+b;let g=SC.get(key);
+  if(!g){g=[a,b];
+   if(PF!='line'){try{const j=await(await fetch(`https://routing.openstreetmap.de/routed-${PF}/route/v1/driving/${a};${b}?overview=full&geometries=geojson`)).json();
+    if(j.routes&&j.routes[0]){g=j.routes[0].geometry.coordinates;SC.set(key,g)}else off=true}catch(e){off=true}}
+   else SC.set(key,g)}
+  if(k!=RT)return;line.push(...(i>1?g.slice(1):g))}
+ draw(line);
+ $('#rm').textContent=!WP.length?'Toca el mapa para añadir puntos.':off?'Sin conexión o sin camino: tramo en línea recta.':PF=='line'?'Líneas rectas entre los puntos.':'La ruta sigue caminos.';
+ let km=0;for(let i=1;i<line.length;i++)km+=hv(line[i-1],line[i]);
+ tx('#rd',fm(km));RTE=null;
+ if(line.length<2){tx('#ru','+0 m');tx('#rn','−0 m');return}
+ const st=Math.max(25,km/600),P=[line[0]];
+ for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],n=Math.max(1,Math.ceil(hv(a,b)/st));for(let j=1;j<=n;j++)P.push([a[0]+(b[0]-a[0])*j/n,a[1]+(b[1]-a[1])*j/n])}
+ const E=await Promise.all(P.map(p=>elev(p[0],p[1])));if(k!=RT)return;
+ let up=0,dn=0,ref=NaN;E.forEach(z=>{if(isNaN(z))return;if(isNaN(ref))ref=z;if(z-ref>3){up+=z-ref;ref=z}else if(ref-z>3){dn+=ref-z;ref=z}});
+ const ok=E.some(z=>!isNaN(z));tx('#ru',ok?'+'+Math.round(up)+' m':'—');tx('#rn',ok?'−'+Math.round(dn)+' m':'—');RTE={P,E}}
+map.on('click',e=>{if(!ed)return;WP.push([e.lngLat.lng,e.lngLat.lat]);rebuild()});
+const rto=o=>{ed=o;$('#rt').classList.toggle('open',o);$('#br').classList.toggle('on',o);map.getCanvas().style.cursor=o?'crosshair':'';if(o)$('#sh').classList.remove('open')};
+$('#br').onclick=()=>rto(!ed);$('#rx').onclick=()=>rto(false);
+$('#rz').onclick=()=>{WP.pop();rebuild()};$('#rb').onclick=()=>{WP=[];rebuild()};
+$$('.sg b').forEach(b=>b.onclick=()=>{PF=b.dataset.p;$$('.sg b').forEach(x=>x.classList.toggle('on',x==b));rebuild()});
+$('#rg').onclick=()=>{if(!RTE)return toast('Dibuja primero una ruta');
+ const d=new Date().toLocaleDateString('sv'),{P,E}=RTE,
+ g=`<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Mapa de terreno" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>Ruta ${d}</name><trkseg>${P.map((p,i)=>`<trkpt lat="${p[1].toFixed(6)}" lon="${p[0].toFixed(6)}">${isNaN(E[i])?'':`<ele>${E[i].toFixed(1)}</ele>`}</trkpt>`).join('')}</trkseg></trk></gpx>`,
+ f=new File([g],`ruta-${d}.gpx`,{type:'application/gpx+xml'});
+ if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Ruta'}).catch(()=>{});
+ else{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click()}};
 trk();mark();
 </script></body></html>
