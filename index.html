@@ -48,36 +48,86 @@ input[type=range]{flex:1;accent-color:#2f5d46}
 .th i{width:12px;height:12px;border-radius:50%;flex:none}.th u{text-decoration:none;padding:4px 8px;color:#7a857f}
 .tr svg{width:100%;height:44px;display:block;margin-top:6px}
 #ad{margin:6px 0 8px;padding:10px 14px;border:0;border-radius:10px;background:#2f5d46;color:#fff;font-size:15px}
+
+.tabs{overflow-x:auto}.tabs b{flex:none;padding:12px 13px}
+#sc{bottom:calc(156px + env(safe-area-inset-bottom,0px))}
+#rec{position:fixed;right:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:64px;height:64px;border-radius:50%;border:0;background:#0e7c86;box-shadow:0 3px 10px #0006;z-index:5;padding:0}
+#rec.on{background:#dc2626;animation:pl 1.4s infinite}
+@keyframes pl{0%{box-shadow:0 0 0 0 #dc262699}100%{box-shadow:0 0 0 18px #dc262600}}
+#rcs{position:fixed;right:14px;bottom:calc(156px + env(safe-area-inset-bottom,0px));background:#fff;border-radius:14px;box-shadow:0 2px 10px #0004;padding:8px 12px;z-index:5;font-size:13px;line-height:1.5}
+#pp{position:fixed;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px #0005;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:7;transform:translateY(105%);transition:transform .25s}
+#pp.open{transform:none}
+.pf svg{width:100%;height:100px;display:block;touch-action:none;background:#eef3f0;border-radius:10px;margin-top:6px}.pf .rd{display:block;margin-top:4px}
+.pm{width:16px;height:16px;border-radius:50%;background:#0e7c86;border:3px solid #fff;box-shadow:0 0 0 1px #0005}
+#sq{position:fixed;left:56px;right:76px;top:calc(12px + env(safe-area-inset-top,0px));z-index:6}
+#sq input{width:100%;padding:12px 14px;border:0;border-radius:14px;font-size:16px;box-shadow:0 2px 8px #0005}
+#sr div{background:#fff;padding:10px 12px;border-bottom:1px solid #e3e8e5;font-size:14px}
+.poi{font-size:20px;line-height:1;text-shadow:0 0 3px #fff,0 0 3px #fff;cursor:pointer}
+.ch{display:inline-block;padding:7px 11px;margin:0 6px 6px 0;border-radius:16px;background:#eef3f0;font-weight:500;font-size:14px}.ch.on{background:#2f5d46;color:#fff}
+#lg2 a,#p1 a{color:#0e7c86}
+.lh .fab{right:auto;left:12px}.lh #rec,.lh #rcs{right:auto;left:14px}.lh #lg2{left:auto;right:10px}.lh #sq{left:76px;right:56px}
+.dk{color:#e6eee9}
+.dk #sh,.dk #rt,.dk #pp,.dk #ib,.dk #sc,.dk #lg2,.dk #rcs,.dk #at,.dk #sr div,.dk #sq input,.dk .tabs{background:#1c2622;color:#e6eee9}
+.dk .fab button:not(.on){background:#1c2622;color:#7ed3a0}
+.dk .tabs{border-color:#33413a}.dk .tabs b{color:#93a39a}.dk .tabs b.on{color:#fff}.dk .it.on{background:#27402f}
+.dk small,.dk #lg2 small,.dk #ib small{color:#9fb0a6}
+.dk .sg b,.dk .ra button,.dk .ch,.dk .pf svg,.dk input[type=date]{background:#2a3631;color:#e6eee9}
+.dk .ch.on,.dk .sg b.on{background:#2f5d46}.dk .ra #rg,.dk .ra #pg{background:#0e7c86}
+
+#av{position:fixed;left:0;right:0;bottom:0;max-height:70%;overflow:auto;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px #0005;padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));z-index:8;transform:translateY(105%);transition:transform .25s}
+#av.open{transform:none}
+.dg{display:flex;align-items:center;gap:8px;margin:4px 0}.dg i{display:inline-block;min-width:26px;text-align:center;border-radius:6px;padding:3px 0;font-style:normal;font-weight:700;color:#111}
+.avp{margin:8px 0;padding:8px;background:#eef3f0;border-radius:10px;font-size:13px}
+#wt{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0}#wt td,#wt th{padding:5px 2px;text-align:center;border-bottom:1px solid #e3e8e5;font-weight:500}
+#ba{font-size:18px}#c5{font-size:15px;padding:6px}
+.dk #av{background:#1c2622;color:#e6eee9}.dk .avp{background:#2a3631}.dk #wt td,.dk #wt th{border-color:#33413a}.dk select{background:#2a3631;color:#e6eee9}
 </style></head><body>
 <div id=map></div>
-<div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=br title="Crear ruta">✎</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
+<div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=bs title="Buscar">🔍</button><button id=ba title="Boletín de aludes">⚠</button><button id=br title="Crear ruta">✎</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
 <input type=file id=fi multiple hidden accept=".gpx,.xml,application/gpx+xml,application/xml,text/xml,application/octet-stream"><div id=ts hidden></div>
+<div id=av><div class=wh><b>Boletín de aludes · Aran</b><span id=avx>✕</span></div><div id=avc></div>
+<small><a href="https://lauegi.report/" target=_blank rel=noopener>Abrir el boletín completo en lauegi.report ↗</a></small></div>
+<div id=sq hidden><input id=si placeholder="Buscar un lugar" enterkeyhint=search><div id=sr></div></div>
+<button id=rec title="Grabar recorrido"><svg viewBox="0 0 48 48" width=40 height=40><circle cx=24 cy=24 r=15 fill=none stroke=#fff stroke-width=3 /><path d="M24 4v8M24 36v8M4 24h8M36 24h8" stroke=#fff stroke-width=3 stroke-linecap=round /><path d="M20 16l13 8-13 8z" fill=#fff /></svg></button>
+<div id=rcs hidden></div>
+<div id=pp><div class=wh><b id=pt>Track</b><span id=px>✕</span></div><small id=ps></small><div class=pf id=pq></div><div class=ra><button id=pl>Biblioteca</button><button id=pg>GPX</button></div></div>
 <div id=rt><div class=wh><b>Crear ruta</b><span id=rx>✕</span></div>
 <div class=sg><b data-p=bike class=on>Bici</b><b data-p=foot>A pie</b><b data-p=line>Recta</b></div>
 <div id=rs><div><b id=rd>0 m</b><small>distancia</small></div><div><b id=ru>+0 m</b><small>desnivel +</small></div><div><b id=rn>−0 m</b><small>desnivel −</small></div></div>
-<div class=ra><button id=rz>Deshacer</button><button id=rb>Borrar</button><button id=rg>Guardar GPX</button></div>
+<div class=pf id=rp></div>
+<div class=ra><button id=rz>Deshacer</button><button id=rb>Borrar</button><button id=rl>Biblioteca</button><button id=rg>GPX</button></div>
 <small id=rm>Toca el mapa para añadir puntos.</small></div>
 <div id=sc hidden><div class=sr><input id=dt type=date><b id=hl></b><span id=sl></span></div><input id=tm type=range min=0 max=1430 step=10></div>
 <div id=lg2 hidden></div>
 <div id=dn></div>
-<div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div></div>
+<div id=ib><div><b id=vd>—</b><small>◎ distancia</small></div><div><b id=vt>—</b><small>◎ altitud diana</small></div><div><b id=vg>—</b><small>⌖ altitud GPS</small></div><div><b id=vh>—</b><small>↗ desnivel</small></div><div id=bm style="flex:0 0 46px;font-size:22px;line-height:38px">📍</div></div>
 <div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
 <div id=sh>
- <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b data-t=3>Offline</b><b id=cl>✕</b></div>
+ <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b data-t=3>Offline</b><b data-t=4>Ajustes</b><b data-t=5>Rutas</b><b data-t=6>Tiempo</b><b id=cl>✕</b></div>
  <div class="p on" id=p0></div>
  <div class=p id=p1>
   <label>Opacidad <input id=op type=range min=.1 max=1 step=.05 value=.7></label>
   <div id=ml></div>
+  <p><a href=# id=al>Ver boletín de aludes (Aran) ↗</a></p>
   
   <div class=lg id=lg></div>
   <small>Aludes: es una vista simplificada basada solo en la pendiente. No sustituye al boletín oficial de aludes.</small>
  </div>
  <div class=p id=p2><label><input type=checkbox id=ck> Curvas de nivel (cada 20 m, y 100 m más marcadas)</label>
   <small>Se calculan desde el modelo de elevación a partir del zoom 11.</small>
+  <p><b>Puntos de interés</b></p><div id=pc></div><small>Se cargan de OpenStreetMap (zoom 12 o más). Usa 📍 en la barra inferior para marcar la diana.</small>
   <p><b>Tracks GPX</b></p><button id=ad>Añadir GPX</button><div id=tk></div></div>
  <div class=p id=p3><small id=osx></small>
   <button id=od class=big>Descargar esta zona</button><button id=oc class=big style="background:#8a948e">Borrar mapas descargados</button>
   <small>Guarda el mapa base actual y el relieve (para pendientes y sombras) de lo que ves y 3 niveles más de zoom. Instala la web en la pantalla de inicio y descarga desde ahí.</small></div>
+ <div class=p id=p4><label><input type=checkbox id=c1> Modo oscuro</label>
+  <label><input type=checkbox id=c2> Botones a la izquierda (zurdo)</label>
+  <label><input type=checkbox id=c3> Mostrar diana y barra de datos</label>
+  <label><input type=checkbox id=c4> Mantener la pantalla encendida al grabar</label>
+  <label>Mapa base al abrir <select id=c5><option value=topo>Terreno</option><option value=sat>Satélite</option><option value=mix>Mixto</option></select></label>
+  <small>Los ajustes se guardan en este dispositivo.</small></div>
+ <div class=p id=p5><div id=lb></div></div>
+ <div class=p id=p6><div id=wx><small>Abre esta pestaña, o toca la altitud de la diana en la barra inferior, para ver la previsión.</small></div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
@@ -140,7 +190,7 @@ const map=new maplibregl.Map({container:'map',center:[0.8,42.7],zoom:11.5,maxZoo
   sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:19},
   dem:{type:'raster-dem',tiles:[T],tileSize:256,maxzoom:15,encoding:'terrarium'}},
  layers:[{id:'sat',type:'raster',source:'sat',layout:{visibility:'none'}},{id:'topo',type:'raster',source:'topo'}]}});
-map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-left');
+const nav=new maplibregl.NavigationControl({visualizePitch:true});map.addControl(nav,'top-left');
 map.on('load',()=>{
  map.addSource('ct',{type:'raster',tiles:['dem://{z}/{x}/{y}?m=cont'],tileSize:256,minzoom:11,maxzoom:15});
  map.addLayer({id:'ct',type:'raster',source:'ct',layout:{visibility:'none'},paint:{'raster-fade-duration':0}})});
@@ -167,7 +217,7 @@ function ov(){
  if(map.getLayer('ov'))map.removeLayer('ov');if(map.getSource('ov'))map.removeSource('ov');
  if(S.mode=='none')return;
  let q='m='+S.mode;
- if(S.mode=='shade'){const c=map.getCenter(),t=new Date(S.date+'T00:00');t.setMinutes(S.min);const[a,l]=sun(t,c.lat,c.lng);$('#sl').textContent=l>0?'☀ '+Math.round(l*57.2958)+'°':'🌙 de noche';q+=`&az=${a}&al=${l}`}
+ if(S.mode=='shade'){const c=map.getCenter(),t=new Date(S.date+'T00:00');t.setMinutes(S.min);const[a,l]=sun(t,c.lat,c.lng);sline(l,c);q+=`&az=${a}&al=${l}`}
  map.addSource('ov',{type:'raster',tiles:['dem://{z}/{x}/{y}?'+q],tileSize:256,minzoom:8,maxzoom:15});
  map.addLayer({id:'ov',type:'raster',source:'ov',paint:{'raster-opacity':S.op,'raster-fade-duration':0}},map.getLayer('ct')?'ct':undefined)}
 const lab=()=>$('#hl').textContent=String(S.min/60|0).padStart(2,'0')+':'+String(S.min%60).padStart(2,'0');
@@ -214,7 +264,7 @@ function gpx(txt,name){
   map.addLayer({id:id+'b',type:'line',source:id,filter:L,layout:ln,paint:{'line-color':c,'line-width':4}});
   map.addLayer({id:id+'c',type:'circle',source:id,filter:['==',['geometry-type'],'Point'],paint:{'circle-radius':6,'circle-color':['case',['==',['get','e'],0],'#16a34a','#111'],'circle-stroke-width':2,'circle-stroke-color':'#fff'}});
   $('#sh').classList.remove('open');map.fitBounds(b,{padding:60,maxZoom:15});
-  TK.push({id,name:nm,c,b,km,up,dn,mn,mx,svg});trk();
+  TK.push({id,name:nm,c,b,km,up,dn,mn,mx,svg,P,txt});trk();tpanel(TK[TK.length-1]);
   toast(`${nm}: ${(km/1000).toFixed(1)} km`+(isNaN(mn)?'':` · +${Math.round(up)} m`))};
  map.getLayer('ct')?add():map.once('load',add)}
 const load=fs=>[...fs].forEach(f=>f.text().then(t=>gpx(t,f.name.replace(/\.gpx$/i,''))));
@@ -223,7 +273,7 @@ $('#fi').onchange=e=>{load(e.target.files);e.target.value=''};
 addEventListener('dragover',e=>e.preventDefault());addEventListener('drop',e=>{e.preventDefault();load(e.dataTransfer.files)});
 $('#tk').onclick=e=>{const x=e.target.dataset.x,r=e.target.closest('.tr');
  if(x!=null){const[t]=TK.splice(+x,1);['a','b','c'].forEach(s=>map.removeLayer(t.id+s));map.removeSource(t.id);trk()}
- else if(r){$('#sh').classList.remove('open');map.fitBounds(TK[+r.dataset.i].b,{padding:60,maxZoom:15})}};
+ else if(r){$('#sh').classList.remove('open');tpanel(TK[+r.dataset.i])}};
 // Diana (centro del mapa) y GPS
 let G=null,wid=null,gm=null,tAlt=NaN,es=0;
 const fm=d=>d<1000?Math.round(d)+' m':(d/1000).toFixed(2)+' km',tx=(i,t)=>$(i).textContent=t,rd=a=>isNaN(a)?'—':Math.round(a)+' m';
@@ -293,12 +343,12 @@ async function rebuild(){
  $('#rm').textContent=!WP.length?'Toca el mapa para añadir puntos.':off?'Sin conexión o sin camino: tramo en línea recta.':PF=='line'?'Líneas rectas entre los puntos.':'La ruta sigue caminos.';
  let km=0;for(let i=1;i<line.length;i++)km+=hv(line[i-1],line[i]);
  tx('#rd',fm(km));RTE=null;
- if(line.length<2){tx('#ru','+0 m');tx('#rn','−0 m');return}
+ if(line.length<2){tx('#ru','+0 m');tx('#rn','−0 m');$('#rp').innerHTML='';return}
  const st=Math.max(25,km/600),P=[line[0]];
  for(let i=1;i<line.length;i++){const a=line[i-1],b=line[i],n=Math.max(1,Math.ceil(hv(a,b)/st));for(let j=1;j<=n;j++)P.push([a[0]+(b[0]-a[0])*j/n,a[1]+(b[1]-a[1])*j/n])}
  const E=await Promise.all(P.map(p=>elev(p[0],p[1])));if(k!=RT)return;
  let up=0,dn=0,ref=NaN;E.forEach(z=>{if(isNaN(z))return;if(isNaN(ref))ref=z;if(z-ref>3){up+=z-ref;ref=z}else if(ref-z>3){dn+=ref-z;ref=z}});
- const ok=E.some(z=>!isNaN(z));tx('#ru',ok?'+'+Math.round(up)+' m':'—');tx('#rn',ok?'−'+Math.round(dn)+' m':'—');RTE={P,E}}
+ const ok=E.some(z=>!isNaN(z));tx('#ru',ok?'+'+Math.round(up)+' m':'—');tx('#rn',ok?'−'+Math.round(dn)+' m':'—');RTE={P,E,km,up,dn};prof($('#rp'),P,E)}
 map.on('click',e=>{if(!ed)return;WP.push([e.lngLat.lng,e.lngLat.lat]);rebuild()});
 const rto=o=>{ed=o;$('#rt').classList.toggle('open',o);$('#br').classList.toggle('on',o);map.getCanvas().style.cursor=o?'crosshair':'';if(o)$('#sh').classList.remove('open')};
 $('#br').onclick=()=>rto(!ed);$('#rx').onclick=()=>rto(false);
@@ -314,6 +364,203 @@ $('#rg').onclick=()=>{if(!RTE)return toast('Dibuja primero una ruta');
 LG.slope.unshift(['#fff','menos de 20°']);LG.avy.unshift(['#fff','menos de 30°']);LG.avy.push(['#5a005a','más de 45°']);
 LG.elev=[['#228b22','0 m'],['#9acd32','1000 m'],['#deb887','2000 m'],['#96705a','2800 m'],['#fff','3500 m o más']];
 const LT={slope:['Ángulo de pendiente','Inclinación del terreno'],aspect:['Orientación','Hacia dónde mira la ladera'],avy:['Riesgo de aludes','Solo por pendiente (orientativo)'],flat:['Zonas planas','Pendiente baja'],elev:['Altitud','Colores cada 250 m']};
-const leg=k=>{const e=$('#lg2'),t=LT[k];e.hidden=!t;if(t)e.innerHTML=`<b>${t[0]}</b><small>${t[1]}</small>`+LG[k].map(([c,x])=>`<span><i style=background:${c}></i>${x}</span>`).join('')};
+const leg=k=>{const e=$('#lg2'),t=LT[k];e.hidden=!t;if(t)e.innerHTML=`<b>${t[0]}</b><small>${t[1]}</small>`+LG[k].map(([c,x])=>`<span><i style=background:${c}></i>${x}</span>`).join('')+(k=='avy'?'<br><a href=# id=al2>Ver boletín ↗</a>':'')};
+// ===== Ajustes =====
+let CFG={dk:false,lh:false,tg:true,wk:true};try{Object.assign(CFG,JSON.parse(localStorage.getItem('cfg')||'{}'))}catch(e){}
+function applyCfg(){const b=document.body.classList;b.toggle('dk',CFG.dk);b.toggle('lh',CFG.lh);
+ ['topo','sat'].forEach(i=>map.getLayer(i)&&map.setPaintProperty(i,'raster-brightness-max',CFG.dk?.5:1));
+ $('#dn').style.display=$('#ib').style.display=CFG.tg?'':'none';
+ map.removeControl(nav);map.addControl(nav,CFG.lh?'top-right':'top-left')}
+['dk','lh','tg','wk'].forEach((k,i)=>{const c=$('#c'+(i+1));c.checked=CFG[k];c.onchange=()=>{CFG[k]=c.checked;try{localStorage.setItem('cfg',JSON.stringify(CFG))}catch(e){}applyCfg()}});
+map.on('load',applyCfg);applyCfg();
+
+// ===== Perfil de altura con pendiente =====
+let pmk=null;
+const pmv=ll=>{if(!ll){if(pmk)pmk.remove();pmk=null;return}if(!pmk)pmk=new maplibregl.Marker({element:Object.assign(document.createElement('div'),{className:'pm'})});pmk.setLngLat(ll).addTo(map)};
+function prof(el,P,E){
+ const n=P.length,D=[0];for(let i=1;i<n;i++)D.push(D[i-1]+hv(P[i-1],P[i]));
+ let last=NaN;const f=E.map(z=>isNaN(z)?last:(last=z)),k=f.findIndex(z=>!isNaN(z));
+ if(n<2||k<0||!D[n-1]){el.innerHTML='<small>Sin datos de altitud.</small>';return}
+ for(let i=0;i<k;i++)f[i]=f[k];
+ const S=f.map((_,i)=>{let a=0,c=0;for(let j=Math.max(0,i-2);j<=Math.min(n-1,i+2);j++){a+=f[j];c++}return a/c}),
+ G=S.map((_,i)=>{let a=i,b=i;while(a>0&&D[i]-D[a]<30)a--;while(b<n-1&&D[b]-D[i]<30)b++;return D[b]>D[a]?(S[b]-S[a])/(D[b]-D[a])*100:0}),
+ lo=S.reduce((a,b)=>Math.min(a,b)),hi=S.reduce((a,b)=>Math.max(a,b)),st=Math.ceil(n/200),ix=[];
+ for(let i=0;i<n;i+=st)ix.push(i);if(ix[ix.length-1]!=n-1)ix.push(n-1);
+ const X=i=>(D[i]/D[n-1]*300).toFixed(1),Y=i=>(92-(S[i]-lo)/(hi-lo||1)*80).toFixed(1),
+ col=g=>{g=Math.abs(g);return g<5?'#4ade80':g<10?'#facc15':g<15?'#fb923c':g<20?'#ef4444':'#a855f7'};
+ let d='';for(let q=1;q<ix.length;q++){const a=ix[q-1],b=ix[q];d+=`<path d="M${X(a)},${Y(a)}L${X(b)},${Y(b)}L${X(b)},100L${X(a)},100Z" fill="${col(G[b])}"/>`}
+ const mx=G.reduce((a,b)=>Math.max(a,b)),mn=G.reduce((a,b)=>Math.min(a,b)),def=`↗ máx +${mx.toFixed(0)}% · ↘ máx ${mn.toFixed(0)}% · ${Math.round(lo)}–${Math.round(hi)} m`;
+ el.innerHTML=`<svg viewBox="0 0 300 100" preserveAspectRatio="none">${d}<line x1=0 x2=0 y1=0 y2=100 stroke="#111" stroke-width=1.5 vector-effect="non-scaling-stroke" style="visibility:hidden"/></svg><small class=rd>${def}</small>`;
+ const sv=el.querySelector('svg'),ln=el.querySelector('line'),ro=el.querySelector('.rd');
+ const mvf=e=>{const r=sv.getBoundingClientRect(),x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)),m=x*D[n-1];let i=0;while(i<n-1&&D[i+1]<m)i++;
+  ln.setAttribute('x1',x*300);ln.setAttribute('x2',x*300);ln.style.visibility='visible';
+  ro.textContent=`${(D[i]/1000).toFixed(2)} km · ${Math.round(f[i])} m · ${G[i]>0?'+':''}${G[i].toFixed(0)}%`;pmv(P[i])};
+ sv.onpointermove=sv.onpointerdown=mvf;
+ sv.onpointerup=sv.onpointerleave=sv.onpointercancel=()=>{ln.style.visibility='hidden';ro.textContent=def;pmv(null)}}
+let curT=null;
+function tpanel(t){curT=t;$('#pt').textContent=t.name;
+ $('#ps').textContent=`${(t.km/1000).toFixed(1)} km`+(isNaN(t.mn)?'':` · +${Math.round(t.up)} m · −${Math.round(t.dn)} m`);
+ $('#pp').classList.add('open');$('#sh').classList.remove('open');
+ prof($('#pq'),t.P.map(p=>[p[0],p[1]]),t.P.map(p=>p[2]));
+ map.fitBounds(t.b,{padding:{top:70,left:50,right:70,bottom:320},maxZoom:15})}
+$('#px').onclick=()=>{$('#pp').classList.remove('open');pmv(null)};
+const gt=(P,E,name,T)=>`<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Mapa de terreno" xmlns="http://www.topografix.com/GPX/1/1"><trk><name>${esc(name)}</name><trkseg>${P.map((p,i)=>`<trkpt lat="${p[1].toFixed(6)}" lon="${p[0].toFixed(6)}">${isNaN(E[i])?'':`<ele>${E[i].toFixed(1)}</ele>`}${T?`<time>${new Date(T[i]).toISOString()}</time>`:''}</trkpt>`).join('')}</trkseg></trk></gpx>`;
+const gsave=(g,name)=>{const f=new File([g],name+'.gpx',{type:'application/gpx+xml'});
+ if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(()=>{});
+ else{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click()}};
+$('#pg').onclick=()=>{if(curT)gsave(curT.txt,curT.name.replace(/[^\p{L}\d\- ]/gu,'').trim().replace(/\s+/g,'-')||'ruta')};
+
+// ===== Grabar recorrido =====
+let RP=[],rw=null,rt0=0,rtm=null,wl=null;
+const EMPTY={type:'FeatureCollection',features:[]},RI=$('#rec').innerHTML,SI='<svg viewBox="0 0 48 48" width=36 height=36><rect x=14 y=14 width=20 height=20 rx=3 fill=#fff /></svg>';
+map.on('load',()=>{map.addSource('rc',{type:'geojson',data:EMPTY});const ln={'line-cap':'round','line-join':'round'};
+ map.addLayer({id:'rca',type:'line',source:'rc',layout:ln,paint:{'line-color':'#fff','line-width':7}});
+ map.addLayer({id:'rcb',type:'line',source:'rc',layout:ln,paint:{'line-color':'#0e7c86','line-width':4}})});
+function ruc(){let km=0,up=0,ref=NaN;for(let i=1;i<RP.length;i++)km+=hv(RP[i-1],RP[i]);
+ RP.forEach(q=>{const z=q[2];if(isNaN(z))return;if(isNaN(ref))ref=z;if(z-ref>5){up+=z-ref;ref=z}else if(ref-z>5)ref=z});
+ const s=Math.round((Date.now()-rt0)/1000),h=s/3600|0,m=s/60%60|0;
+ $('#rcs').innerHTML=`⏱ ${h}:${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}<br>↔ ${fm(km)}<br>↗ +${Math.round(up)} m<br>⚡ ${s>5?(km/1000/(s/3600)).toFixed(1):'0.0'} km/h`}
+function rstart(){
+ if(!navigator.geolocation)return toast('Este navegador no tiene GPS');
+ RP=[];rt0=Date.now();$('#rec').classList.add('on');$('#rec').innerHTML=SI;$('#rcs').hidden=false;ruc();rtm=setInterval(ruc,1000);
+ if(CFG.wk&&navigator.wakeLock)navigator.wakeLock.request('screen').then(w=>wl=w).catch(()=>{});
+ rw=navigator.geolocation.watchPosition(p=>{const c=p.coords;if(c.accuracy>40)return;
+  const q=[c.longitude,c.latitude,c.altitude==null?NaN:c.altitude,Date.now()],l=RP[RP.length-1];
+  if(l&&hv(l,q)<4)return;RP.push(q);
+  if(RP.length>1)map.getSource('rc').setData({type:'Feature',geometry:{type:'LineString',coordinates:RP.map(x=>[x[0],x[1]])}});
+  if(RP.length%10==0)try{localStorage.setItem('rec',JSON.stringify(RP))}catch(e){}},
+  ()=>toast('Sin señal GPS'),{enableHighAccuracy:true,maximumAge:0});
+ toast('Grabando. Mantén la pantalla encendida: el iPhone no graba con la pantalla apagada')}
+async function rfin(q){
+ if(q.length<2)return toast('Grabación demasiado corta');
+ const P=q.map(x=>[x[0],x[1]]),E=await Promise.all(q.map(x=>elev(x[0],x[1]).then(z=>isNaN(z)?x[2]:z))),d=new Date().toLocaleDateString('sv'),n='Grabación '+d;
+ gpx(gt(P,E,n,q.map(x=>x[3])),n)}
+function rstop(){
+ navigator.geolocation.clearWatch(rw);rw=null;clearInterval(rtm);if(wl&&wl.release)wl.release();wl=null;
+ $('#rec').classList.remove('on');$('#rec').innerHTML=RI;$('#rcs').hidden=true;map.getSource('rc').setData(EMPTY);
+ try{localStorage.removeItem('rec')}catch(e){}
+ rfin(RP)}
+$('#rec').onclick=()=>rw==null?rstart():rstop();
+document.addEventListener('visibilitychange',()=>{if(rw!=null&&document.visibilityState==='visible'&&CFG.wk&&navigator.wakeLock)navigator.wakeLock.request('screen').then(w=>wl=w).catch(()=>{})});
+try{const r=JSON.parse(localStorage.getItem('rec')||'null');if(r&&r.length>1&&confirm('Hay una grabación sin terminar. ¿Recuperarla?'))rfin(r);localStorage.removeItem('rec')}catch(e){}
+
+// ===== Puntos de interés (OpenStreetMap) y marcas propias =====
+const PC={w:['💧','Agua',['["amenity"="drinking_water"]','["natural"="spring"]']],h:['🛖','Refugios',['["tourism"="alpine_hut"]','["tourism"="wilderness_hut"]','["amenity"="shelter"]']],
+ p:['⛰️','Cimas',['["natural"="peak"]']],k:['🅿️','Parking',['["amenity"="parking"]']],v:['👁️','Miradores',['["tourism"="viewpoint"]']],
+ b:['🚲','Bici',['["amenity"="bicycle_repair_station"]','["amenity"="bicycle_rental"]','["shop"="bicycle"]']]};
+let PS=new Set(),PM=[],pb=null,pa=null,ptm;
+$('#pc').innerHTML=Object.entries(PC).map(([k,v])=>`<b class=ch data-c=${k}>${v[0]} ${v[1]}</b>`).join('');
+async function poi(force){
+ if(!PS.size){PM.forEach(m=>m.remove());PM=[];pb=null;return}
+ if(map.getZoom()<12){toast('Acerca el mapa (zoom 12 o más) para ver los puntos de interés');return}
+ const v=map.getBounds();
+ if(force!==true&&pb&&v.getWest()>=pb[0]&&v.getSouth()>=pb[1]&&v.getEast()<=pb[2]&&v.getNorth()<=pb[3])return;
+ const dx=(v.getEast()-v.getWest())*.3,dy=(v.getNorth()-v.getSouth())*.3,b=[v.getWest()-dx,v.getSouth()-dy,v.getEast()+dx,v.getNorth()+dy],bb=`${b[1]},${b[0]},${b[3]},${b[2]}`;
+ if(pa)pa.abort();pa=new AbortController();toast('Cargando puntos de interés…');
+ try{
+  const q=[...PS].flatMap(k=>PC[k][2].map(t=>`node${t}(${bb});`)).join('');
+  const r=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(`[out:json][timeout:25];(${q});out 300;`),{signal:pa.signal});
+  if(!r.ok)throw 0;
+  const j=await r.json();
+  PM.forEach(m=>m.remove());
+  PM=j.elements.map(x=>{const t=x.tags||{},k=Object.keys(PC).find(c=>PC[c][2].some(g=>{const m=g.match(/"([^"]+)"="([^"]+)"/);return t[m[1]]==m[2]})),
+   e=Object.assign(document.createElement('div'),{className:'poi',textContent:k?PC[k][0]:'📍'});
+   return new maplibregl.Marker({element:e}).setLngLat([x.lon,x.lat]).setPopup(new maplibregl.Popup({offset:14}).setHTML(`<b>${esc(t.name||(k?PC[k][1]:'Punto'))}</b>${t.ele?`<br>${esc(t.ele)} m`:''}${t.description?`<br>${esc(t.description)}`:''}`)).addTo(map)});
+  pb=b;toast(PM.length?PM.length+' puntos de interés':'No hay puntos en esta zona')
+ }catch(err){if(err.name!='AbortError')toast('No se pudieron cargar los puntos (¿sin conexión?)')}}
+$('#pc').onclick=e=>{const c=e.target.dataset.c;if(!c)return;e.target.classList.toggle('on');PS.has(c)?PS.delete(c):PS.add(c);poi(true)};
+map.on('moveend',()=>{clearTimeout(ptm);ptm=setTimeout(poi,700)});
+let MK=[];try{MK=JSON.parse(localStorage.getItem('mk')||'[]')}catch(e){}
+const MKM=[],mkS=()=>{try{localStorage.setItem('mk',JSON.stringify(MK))}catch(e){}};
+function mkDraw(){MKM.forEach(m=>m.remove());MKM.length=0;
+ MK.forEach(m=>MKM.push(new maplibregl.Marker({element:Object.assign(document.createElement('div'),{className:'poi',textContent:'📍'}),anchor:'bottom'}).setLngLat(m.ll)
+  .setPopup(new maplibregl.Popup({offset:14}).setHTML(`<b>${esc(m.n)}</b><br><a href="#" data-d=${m.id}>Borrar</a>`)).addTo(map)))}
+$('#bm').onclick=()=>{const c=map.getCenter(),n=prompt('Nombre de la marca');if(n==null)return;MK.push({id:Date.now(),n:n||'Marca',ll:[c.lng,c.lat]});mkS();mkDraw()};
+document.addEventListener('click',e=>{const d=e.target.dataset&&e.target.dataset.d;if(d){e.preventDefault();MK=MK.filter(m=>m.id!=d);mkS();mkDraw()}});
+mkDraw();
+
+// ===== Buscador de lugares =====
+$('#bs').onclick=()=>{const q=$('#sq');q.hidden=!q.hidden;if(!q.hidden)$('#si').focus()};
+$('#si').onkeydown=async e=>{if(e.key!='Enter')return;const q=e.target.value.trim();if(!q)return;
+ $('#sr').innerHTML='<div>Buscando…</div>';
+ try{const r=await(await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=es&q='+encodeURIComponent(q))).json();
+  $('#sr').innerHTML=r.length?r.map((x,i)=>`<div data-i=${i}>${esc(x.display_name)}</div>`).join(''):'<div>Sin resultados</div>';
+  $('#sr').onclick=ev=>{const x=r[ev.target.dataset.i];if(!x)return;$('#sq').hidden=true;$('#sr').innerHTML='';map.flyTo({center:[+x.lon,+x.lat],zoom:13})}
+ }catch(err){$('#sr').innerHTML='<div>No se pudo buscar (¿sin conexión?)</div>'}};
+
+// ===== Amanecer y atardecer =====
+function sunT(ds,lat,lon){let r=null,s=null,p=false;for(let m=0;m<=1440;m+=5){const t=new Date(ds+'T00:00');t.setMinutes(m);const u=sun(t,lat,lon)[1]>-.0145;if(m&&u&&!p&&r==null)r=m;if(m&&!u&&p)s=m;p=u}return[r,s]}
+const hm=m=>m==null?'--:--':String(m/60|0).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+function sline(l,c){const[r,s]=sunT(S.date,c.lat,c.lng);$('#sl').textContent=(l>0?'☀ '+Math.round(l*57.2958)+'°':'🌙')+' ↑'+hm(r)+' ↓'+hm(s)}
+// ===== Mapa base al abrir =====
+CFG.bm=CFG.bm||'topo';$('#c5').value=CFG.bm;
+$('#c5').onchange=e=>{CFG.bm=e.target.value;try{localStorage.setItem('cfg',JSON.stringify(CFG))}catch(_){}base(CFG.bm);mark()};
+map.on('load',()=>{if(CFG.bm!='topo'){base(CFG.bm);mark()}});
+
+// ===== Biblioteca de rutas =====
+let LIB=[];try{LIB=JSON.parse(localStorage.getItem('lib')||'[]')}catch(e){}
+const libW=()=>{try{localStorage.setItem('lib',JSON.stringify(LIB));return true}catch(e){toast('No hay espacio para guardar más rutas');return false}};
+const fname=n=>n.replace(/[^\p{L}\d\- ]/gu,'').trim().replace(/\s+/g,'-')||'ruta';
+function libSave(P,E,name,km,up,dn){const n=prompt('Nombre de la ruta',name);if(n==null)return;
+ const st=Math.ceil(P.length/3000),pts=P.map((p,i)=>[+p[0].toFixed(5),+p[1].toFixed(5),isNaN(E[i])?null:Math.round(E[i])]).filter((_,i)=>i%st==0||i==P.length-1);
+ LIB.unshift({id:Date.now(),n:n||name,d:new Date().toLocaleDateString('sv'),km,up:Math.round(up||0),dn:Math.round(dn||0),pts});
+ if(libW()){libR();toast('Guardada en la biblioteca')}else LIB.shift()}
+function libR(){$('#lb').innerHTML=LIB.length?LIB.map((t,i)=>`<div class=tr data-i=${i}><div class=th><b>${esc(t.n)}</b><u data-g=${i}>⤓</u><u data-x=${i}>✕</u></div><small>${(t.km/1000).toFixed(1)} km${t.up||t.dn?` · +${t.up} m · −${t.dn} m`:''} · ${t.d}</small></div>`).join(''):'<small>Todavía no hay rutas guardadas. Guarda rutas dibujadas, grabaciones o GPX con el botón «Biblioteca». Toca una para abrirla, ⤓ para exportarla en GPX.</small>'}
+const lE=t=>t.pts.map(p=>p[2]==null?NaN:p[2]);
+$('#lb').onclick=e=>{const d=e.target.dataset,r=e.target.closest('.tr');
+ if(d.x!=null){if(confirm('¿Borrar esta ruta de la biblioteca?')){LIB.splice(+d.x,1);libW();libR()}}
+ else if(d.g!=null){const t=LIB[+d.g];gsave(gt(t.pts,lE(t),t.n),fname(t.n))}
+ else if(r){const t=LIB[+r.dataset.i];$('#sh').classList.remove('open');gpx(gt(t.pts,lE(t),t.n),t.n)}};
+$('#rl').onclick=()=>{if(!RTE)return toast('Dibuja primero una ruta');libSave(RTE.P,RTE.E,'Ruta '+new Date().toLocaleDateString('sv'),RTE.km,RTE.up,RTE.dn)};
+$('#pl').onclick=()=>{if(curT)libSave(curT.P.map(p=>[p[0],p[1]]),curT.P.map(p=>p[2]),curT.name,curT.km,curT.up,curT.dn)};
+$('[data-t="5"]').addEventListener('click',libR);libR();
+
+// ===== Tiempo en la diana (Open-Meteo) =====
+const WE=c=>c==0?'☀️':c<3?'⛅':c==3?'☁️':c<50?'🌫️':c<60?'🌦️':c<70?'🌧️':c<80?'🌨️':c<83?'🌦️':c<87?'🌨️':'⛈️';
+async function weather(){
+ const c=map.getCenter(),el=$('#wx');el.innerHTML='<small>Cargando previsión…</small>';
+ try{
+  const a=isNaN(tAlt)?'':`&elevation=${Math.round(tAlt)}`;
+  const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${c.lat.toFixed(4)}&longitude=${c.lng.toFixed(4)}&hourly=temperature_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,freezing_level_height&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto&forecast_days=3${a}`);
+  if(!r.ok)throw 0;
+  const j=await r.json(),h=j.hourly,d=j.daily,now=new Date().toLocaleString('sv').slice(0,13).replace(' ','T');
+  let i0=h.time.findIndex(t=>t.slice(0,13)>=now);if(i0<0)i0=0;
+  const rows=[];for(let i=i0;i<Math.min(h.time.length,i0+30);i+=3)rows.push(`<tr><td>${h.time[i].slice(8,10)}/${h.time[i].slice(5,7)} ${h.time[i].slice(11,16)}</td><td>${WE(h.weather_code[i])}</td><td>${Math.round(h.temperature_2m[i])}°</td><td>${h.precipitation[i]} mm</td><td>${Math.round(h.wind_speed_10m[i])} (${Math.round(h.wind_gusts_10m[i])})</td><td>${Math.round(h.freezing_level_height[i])} m</td></tr>`);
+  el.innerHTML=`<small>Diana${isNaN(tAlt)?'':' a '+Math.round(tAlt)+' m'} · hoy ${Math.round(d.temperature_2m_min[0])}° / ${Math.round(d.temperature_2m_max[0])}° · ↑${d.sunrise[0].slice(11)} ↓${d.sunset[0].slice(11)}</small>
+  <table id=wt><tr><th>Hora</th><th></th><th>Temp.</th><th>Lluvia</th><th>Viento (rachas) km/h</th><th>Isoterma 0°</th></tr>${rows.join('')}</table><small>Datos: Open-Meteo. Previsión ajustada a la altitud de la diana.</small>`
+ }catch(e){el.innerHTML='<small>No se pudo cargar la previsión (¿sin conexión?).</small>'}}
+$('[data-t="6"]').addEventListener('click',weather);
+$('#vt').parentElement.onclick=()=>{$('#sh').classList.add('open');$('[data-t="6"]').click()};
+
+// ===== Boletín de aludes (Lauegi Aran, formato abierto CAAML) =====
+const AVU=d=>`https://static.lauegi.report/albina_files_local/${d}/${d}_ES-CT-L_es_CAAMLv6.json`;
+const DL={low:[1,'Débil','#ccff66'],moderate:[2,'Limitado','#ffff00'],considerable:[3,'Notable','#ff9900'],high:[4,'Fuerte','#ff3b30'],very_high:[5,'Muy fuerte','#111']};
+const AP={new_snow:'Nieve reciente',wind_slab:'Placas de viento',persistent_weak_layers:'Capas débiles persistentes',wet_snow:'Nieve húmeda',gliding_snow:'Aludes de fondo',cornices:'Cornisas',no_distinct_avalanche_problem:'Sin problema claro',favourable_situation:'Situación favorable'};
+const ASP={N:'N',NE:'NE',E:'E',SE:'SE',S:'S',SW:'SO',W:'O',NW:'NO'};
+const plain=t=>(t||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+const elv=e=>!e?'todas las cotas':e.lowerBound?(e.lowerBound=='treeline'?'sobre el límite del bosque':'sobre '+e.lowerBound+' m'):e.upperBound?(e.upperBound=='treeline'?'bajo el límite del bosque':'bajo '+e.upperBound+' m'):'todas las cotas';
+async function avGet(){
+ const f=d=>d.toLocaleDateString('sv'),n=new Date(),get=async d=>{try{const r=await fetch(AVU(f(d)));return r.ok?{d:f(d),j:await r.json()}:null}catch(e){return null}};
+ let R=(await Promise.all([get(n),get(new Date(n.getTime()+864e5))])).filter(Boolean),off=false;
+ if(R.length)try{localStorage.setItem('av',JSON.stringify(R))}catch(e){}
+ else try{R=JSON.parse(localStorage.getItem('av')||'[]');off=R.length>0}catch(e){}
+ return{R,off}}
+const avB=x=>{const B=x.j.bulletins||x.j;return Array.isArray(B)?B[0]:null};
+const avMax=b=>b?Math.max(0,...(b.dangerRatings||[]).map(r=>(DL[r.mainValue]||[0])[0])):0;
+function avBadge(R){const m=R.length?avMax(avB(R[0])):0,k=Object.values(DL).find(v=>v[0]==m),e=$('#ba');if(k){e.textContent=m;e.style.background=k[2];e.style.color=m==5?'#fff':'#111'}}
+async function avOpen(){
+ $('#sh').classList.remove('open');$('#av').classList.add('open');
+ const c=$('#avc');c.innerHTML='<small>Cargando boletín…</small>';
+ const{R,off}=await avGet();
+ if(!R.length){c.innerHTML='<small>No hay boletín publicado para hoy ni para mañana, o no se ha podido descargar. Abre el boletín completo con el enlace de abajo.</small>';return}
+ if(!off)avBadge(R);
+ c.innerHTML=(off?'<small>Sin conexión: último boletín guardado.</small><br>':'')+R.map(x=>{const b=avB(x);if(!b)return'';
+  const rt=(b.dangerRatings||[]).map(r=>{const k=DL[r.mainValue]||[0,r.mainValue,'#ddd'];return`<div class=dg><i style="background:${k[2]};${k[0]==5?'color:#fff':''}">${k[0]}</i>${esc(k[1])} · ${elv(r.elevation)}</div>`}).join('');
+  const pr=(b.avalancheProblems||[]).map(p=>`<div class=avp><b>${esc(AP[p.problemType]||p.problemType)}</b><br>${(p.aspects||[]).map(a=>ASP[a]||a).join(' ')} · ${elv(p.elevation)}</div>`).join('');
+  const t=plain((b.avalancheActivity||{}).highlights)||plain((b.avalancheActivity||{}).comment);
+  return`<b>${x.d===new Date().toLocaleDateString('sv')?'Hoy':'Mañana'} · ${x.d}</b>${rt}${pr}${t?`<small>${esc(t.slice(0,500))}${t.length>500?'…':''}</small>`:''}<hr>`}).join('')}
+$('#ba').onclick=avOpen;$('#al').onclick=e=>{e.preventDefault();avOpen()};$('#avx').onclick=()=>$('#av').classList.remove('open');
+$('#lg2').addEventListener('click',e=>{if(e.target.id=='al2'){e.preventDefault();avOpen()}});
+avGet().then(({R,off})=>{if(!off)avBadge(R)});
 trk();mark();
 </script></body></html>
