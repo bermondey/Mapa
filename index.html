@@ -99,6 +99,10 @@ select{flex:1}
 
 .tabs{flex-wrap:wrap;overflow:visible}.tabs b{flex:1 0 auto;padding:9px 8px;font-size:14px}#cl{flex:0 0 40px}
 .fab button{display:flex;align-items:center;justify-content:center}
+
+.es{margin:10px 0;padding:10px;border-radius:12px;background:#eef3f0}.es h4{margin:0 0 2px;font-size:15px}
+.es div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;font-size:13px;border-bottom:1px solid #dde5e0}
+.dk .es{background:#2a3631}.dk .es div{border-color:#3a4a43}
 </style></head><body>
 <div id=map></div>
 <div class=fab><button id=bl title="Capas">☰</button><button id=b3>3D</button><button id=bs title="Buscar">🔍</button><button id=ba title="Boletín de aludes"><svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 27 12 7l5 9 3-4 10 15z"/><path d="M13 14l3 3-2 3 3 2"/><circle cx="22" cy="19" r="1.4" fill="currentColor"/><circle cx="25" cy="23" r="1.2" fill="currentColor"/><circle cx="19.5" cy="23.5" r="1" fill="currentColor"/></svg><span id=bn></span></button><button id=br title="Crear ruta">✎</button><button id=bx title="Añadir GPX">GPX</button><button id=bg title="Mi ubicación">◎</button></div>
@@ -127,7 +131,7 @@ select{flex:1}
 <div id=at>© OpenStreetMap · OpenTopoMap · Esri · Terrain Tiles (AWS)</div>
 <div id=sh>
  <div class=tabs><b data-t=0 class=on>Base</b><b data-t=1>Terreno</b><b data-t=2>Capas</b><b data-t=3>Offline</b><b data-t=4>Ajustes</b><b data-t=5>Rutas</b><b data-t=6>Tiempo</b><b id=cl>✕</b></div>
- <small id=ver style="font-size:10px">Versión 16-oct-2026 · c</small>
+ <small id=ver style="font-size:10px">Versión 16-oct-2026 · d</small>
  <div class="p on" id=p0></div>
  <div class=p id=p1>
   <label>Opacidad <input id=op type=range min=.1 max=1 step=.05 value=.7></label>
@@ -159,7 +163,7 @@ select{flex:1}
   <small>Guarda tus rutas, marcas y ajustes en un archivo (por ejemplo en iCloud Drive) para no perderlos si Safari borra los datos.</small>
   <small>Datum WGS84. Rumbos respecto al norte verdadero. Los ajustes se guardan en este dispositivo.</small></div>
  <div class=p id=p5><div id=lb></div></div>
- <div class=p id=p6><div id=wx><small>Abre esta pestaña, o toca la altitud de la diana en la barra inferior, para ver la previsión.</small></div></div>
+ <div class=p id=p6><div id=est></div><div id=wx><small>Abre esta pestaña, o toca la altitud de la diana en la barra inferior, para ver la previsión.</small></div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
@@ -647,5 +651,42 @@ document.addEventListener('click',e=>{const q=e.target.dataset&&e.target.dataset
  else if(q=='d')map.easeTo({center:QL});
  else if(navigator.clipboard)navigator.clipboard.writeText(fc(QL.lat,QL.lng)).then(()=>toast('Coordenadas copiadas'));
  if(QP)QP.remove()});
+// ===== Estaciones automáticas de Meteocat (Aran): resumen diario =====
+const ES=[['Lac Redon','Lac Redon','Lac Redon · 2.245 m'],['Vielha','Vielha - Elip','Vielha - Elipòrt · 1.029 m'],['Sasseuva','Sasseuva','Sasseuva · 2.226 m']];
+const nz=t=>(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const EV=[['Temp. media',n=>/temperatura/.test(n)&&/mitjana/.test(n)&&!/subsol|herba/.test(n),'t'],
+ ['Temp. máxima',n=>/temperatura/.test(n)&&/maxima/.test(n)&&!/subsol|herba|mitjana/.test(n),'t'],
+ ['Temp. mínima',n=>/temperatura/.test(n)&&/minima/.test(n)&&!/subsol|herba|mitjana/.test(n),'t'],
+ ['Humedad media',n=>/humitat/.test(n)&&/mitjana/.test(n),'h'],
+ ['Precipitación',n=>/precipitaci/.test(n),'p'],
+ ['Nieve (espesor máx.)',n=>/neu/.test(n)&&!/precip/.test(n),'s'],
+ ['Racha máx. de viento',n=>/ratxa/.test(n)&&!/direcci/.test(n),'w'],
+ ['Presión media',n=>/pressi/.test(n)&&/mitjana/.test(n),'b'],
+ ['Irradiación solar',n=>/irradi|radiaci/.test(n)&&!/maxima|minima/.test(n),'r']];
+function fv(k,v,u){v=+v;u=(u||'').trim();
+ if(k=='t'){if(/^k$/i.test(u))v-=273.15;return UN()?(v*1.8+32).toFixed(1)+' °F':v.toFixed(1)+' °C'}
+ if(k=='h')return Math.round(v)+' %';
+ if(k=='w'){const w=/m\/s/i.test(u)?v*3.6:v;return UN()?(w*.621371).toFixed(1)+' mph':w.toFixed(1)+' km/h'}
+ if(k=='p')return UN()?(v/25.4).toFixed(2)+' in':v.toFixed(1)+' mm';
+ if(k=='s'){const c=/^m$/i.test(u)?v*100:v;return UN()?(c/2.54).toFixed(1)+' in':c.toFixed(0)+' cm'}
+ if(k=='b')return (/^pa$/i.test(u)?v/100:v).toFixed(1)+' hPa';
+ return v.toFixed(1)+' '+u}
+async function estaciones(){
+ const el=$('#est');el.innerHTML='<small>Cargando estaciones…</small>';
+ let rows=null,off=false;
+ const d4=new Date(Date.now()-4*864e5).toISOString().slice(0,10),w=ES.map(e=>`nom_estacio like '${e[1]}%'`).join(' OR ');
+ try{const r=await fetch('https://analisi.transparenciacatalunya.cat/resource/7bvh-jvq2.json?$where='+encodeURIComponent(`(${w}) AND data_lectura >= '${d4}T00:00:00'`)+'&$order='+encodeURIComponent('data_lectura DESC')+'&$limit=4000');
+  if(!r.ok)throw 0;rows=await r.json();try{localStorage.setItem('est',JSON.stringify(rows))}catch(_){}}
+ catch(err){try{rows=JSON.parse(localStorage.getItem('est')||'null');off=!!rows}catch(_){}}
+ if(!rows||!rows.length){el.innerHTML='<p><b>Estaciones de Meteocat</b></p><small>No se han podido cargar las estaciones (¿sin conexión?).</small>';return}
+ el.innerHTML='<p><b>Estaciones de Meteocat · resumen diario</b></p>'+(off?'<small>Sin conexión: últimos datos guardados.</small>':'')+ES.map(e=>{
+  const R=rows.filter(x=>nz(x.nom_estacio).startsWith(nz(e[1])));
+  if(!R.length)return`<div class=es><h4>${e[2]}</h4><small>Sin datos recientes.</small></div>`;
+  const day=R.reduce((a,x)=>x.data_lectura>a?x.data_lectura:a,''),D=R.filter(x=>x.data_lectura==day);
+  let L=EV.map(([n,f,k])=>{const c=D.filter(x=>f(nz(x.nom_variable))),x=c.find(y=>/10 m/.test(y.nom_variable))||c[0];return x?`<div><span>${n}</span><b>${fv(k,x.valor,x.unitat)}</b></div>`:''}).join('');
+  if(!L)L=D.slice(0,20).map(x=>`<div><span>${esc(x.nom_variable)}</span><b>${esc(x.valor)} ${esc(x.unitat||'')}</b></div>`).join('');
+  return`<div class=es><h4>${e[2]}</h4><small>Día ${day.slice(8,10)}/${day.slice(5,7)}/${day.slice(0,4)} (hora TU)</small>${L}</div>`}).join('')
+  +'<small>Datos: Servei Meteorològic de Catalunya (Meteocat) vía Transparència Catalunya. Es el último día publicado; para hoy en directo y las horas de los extremos: <a href="https://www.meteo.cat/observacions/llistat-xema" target=_blank rel=noopener>meteo.cat ↗</a></small>'}
+$('[data-t="6"]').addEventListener('click',estaciones);
 trk();mark();
 </script></body></html>
